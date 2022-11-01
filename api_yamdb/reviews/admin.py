@@ -9,9 +9,9 @@ class ReviewAdmin(admin.ModelAdmin):
         'pk',
         'title',
         'text',
-        # 'author',
+        'author',
         'score',
     )
-    # search_fields = ('title', 'author', 'pub_date',)
+    search_fields = ('title', 'author', 'pub_date',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
