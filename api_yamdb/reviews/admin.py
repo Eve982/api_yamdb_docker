@@ -15,3 +15,17 @@ class ReviewAdmin(admin.ModelAdmin):
     search_fields = ('title', 'author', 'pub_date',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'review',
+        'text',
+        'author',
+        'pub_date',
+    )
+    search_fields = ('review', 'text', 'author',)
+    list_filter = ('pub_date',)
+    empty_value_display = '-пусто-'

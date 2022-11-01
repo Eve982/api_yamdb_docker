@@ -26,7 +26,7 @@ class Review(models.Model):
         Title,
         on_delete=models.CASCADE,
         related_name='reviews',
-        verbose_name='произведение'
+        verbose_name='Произведение'
     )
     text = models.CharField(
         'Текст отзыва',
@@ -36,7 +36,7 @@ class Review(models.Model):
         'ID пользователя'
     )
     # author = models.ForeignKey(
-    #     'User',
+    #     User,
     #     on_delete=models.CASCADE,
     #     related_name='reviews',
     #     verbose_name='Автор'
@@ -73,4 +73,37 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    pass
+    """Модель комментария к отзыву."""
+
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Отзыв'
+    )
+    text = models.CharField(
+        'Текст комментария',
+        max_length=200
+    )
+    author = models.IntegerField(
+        'ID пользователя'
+    )
+    # author = models.ForeignKey(
+    #     User,
+    #     on_delete=models.CASCADE,
+    #     related_name='comments',
+    #     verbose_name='Автор'
+    # )
+    pub_date = models.DateTimeField(
+        'Дата публикации отзыва',
+        auto_now_add=True,
+        db_index=True
+    )
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+        ordering = ('-pub_date',)
+
+    def __str__(self):
+        return self.text
