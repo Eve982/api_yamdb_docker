@@ -3,8 +3,8 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
-class User(AbstractUser):
-    pass
+# class User(AbstractUser):
+#     pass
 
 
 class Category(models.Model):
@@ -32,12 +32,15 @@ class Review(models.Model):
         'Текст отзыва',
         max_length=200
     )
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='reviews',
-        verbose_name='Автор'
+    author = models.IntegerField(
+        'ID пользователя'
     )
+    # author = models.ForeignKey(
+    #     'User',
+    #     on_delete=models.CASCADE,
+    #     related_name='reviews',
+    #     verbose_name='Автор'
+    # )
     score = models.IntegerField(
         'Оценка',
         validators=(
