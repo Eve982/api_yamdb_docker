@@ -38,6 +38,7 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор для работы с отзывами"""
+
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True,
     )
@@ -53,7 +54,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate_score(self, value):
         if 0 > value > 10:
-            raise serializers.ValidationError('Оценка по 10-бальной шкале!')
+            raise serializers.ValidationError(
+                'Оценка по 10-бальной шкале!'
+            )
         return value
 
     def validate(self, data):
@@ -62,11 +65,27 @@ class ReviewSerializer(serializers.ModelSerializer):
         title = get_object_or_404(Title, pk=title_id)
         if (
             request.method == 'POST'
-            and Review.objects.filter(author=request.user, title=title).exists()
+            and Review.objects.filter(
+                author=request.user, title=title
+            ).exists()
         ):
-            raise serializers.ValidationError('Вы уже оставили отзыв!')
+            raise serializers.ValidationError(
+                'Вы уже оставили отзыв!'
+            )
         return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    pass
+    """Сериализатор для работы с комментариями."""
+
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field='username'
+    )
+    review = serializers.SlugRelatedField(
+        slug_field='text',
+        read_only=True
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Comment
