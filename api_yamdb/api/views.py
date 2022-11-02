@@ -39,13 +39,12 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     """
-    Получить список всех отзывов. 
+    Получить список всех отзывов.
     Права доступа: Доступно авторизованным юзерам.
     """
     serializer_class = ReviewSerializer
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-        IsAuthorOrModeratorOrAdminOrReadOnly
+        IsAuthorOrModeratorOrAdminOrReadOnly,
     )
     pagination_class = PageNumberPagination
 
@@ -71,8 +70,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     """
     serializer_class = CommentSerializer
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-        IsAuthorOrModeratorOrAdminOrReadOnly
+        IsAuthorOrModeratorOrAdminOrReadOnly,
     )
     pagination_class = PageNumberPagination
 

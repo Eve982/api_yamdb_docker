@@ -1,4 +1,3 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from .validators import validate_year
@@ -46,10 +45,10 @@ class Genre(models.Model):
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
         ordering = ['name']
-
+    
     def __str__(self):
         return self.name
-
+    
 
 class Title(models.Model):
     """Модель произведения."""
