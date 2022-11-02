@@ -5,21 +5,18 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.tokens import default_token_generator
 from .validators import validate_username, validate_year
+from django.utils.translation import gettext_lazy as _
 
 
-USER = 'user'
-ADMIN = 'admin'
-MODERATOR = 'moderator'
-
-ROLE_CHOICES = [
-    (USER, USER),
-    (ADMIN, ADMIN),
-    (MODERATOR, MODERATOR),
-]
+class ChoiseRole(models.TextChoices):
+    USER = 'user', _('User')
+    MODERATOR = 'moderator', _('Moderator')
+    ADMIN = 'admin', _('Admin')
 
 
 class User(AbstractUser):
     username = models.CharField(
+        'Имя пользователя',
         validators=(validate_username,),
         max_length=150,
         unique=True,
@@ -27,6 +24,7 @@ class User(AbstractUser):
         null=False
     )
     email = models.EmailField(
+        'Электронная почта',
         max_length=254,
         unique=True,
         blank=False,
@@ -35,26 +33,17 @@ class User(AbstractUser):
     role = models.CharField(
         'роль',
         max_length=20,
-        choices=ROLE_CHOICES,
-        default=USER,
+        choices=ChoiseRole,
+        default=ChoiseRole.USER,
         blank=True
     )
     bio = models.TextField(
-        'биография',
+        verbose_name='биография',
         blank=True,
     )
-    first_name = models.CharField(
-        'имя',
-        max_length=150,
-        blank=True
-    )
-    last_name = models.CharField(
-        'фамилия',
-        max_length=150,
-        blank=True
-    )
+
     confirmation_code = models.CharField(
-        'код подтверждения',
+        verbose_name='код подтверждения',
         max_length=255,
         null=True,
         blank=False,
@@ -63,15 +52,15 @@ class User(AbstractUser):
 
     @property
     def is_user(self):
-        return self.role == USER
+        return self.role == ChoiseRole.USER
 
     @property
     def is_admin(self):
-        return self.role == ADMIN
+        return self.role == ChoiseRole.ADMIN
 
     @property
     def is_moderator(self):
-        return self.role == MODERATOR
+        return self.role == ChoiseRole.MODERATOR
 
     class Meta:
         ordering = ('id',)
