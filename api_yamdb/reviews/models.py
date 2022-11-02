@@ -1,21 +1,101 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-
+from .validators import validate_year
 
 # class User(AbstractUser):
 #     pass
 
 
 class Category(models.Model):
-    pass
+    """Модель категории(типа) произведения."""
+
+    slug = models.SlugField(
+        verbose_name='Slug категории',
+        max_length=50,
+        unique=True,
+    )
+    name = models.CharField(
+        verbose_name='Название категории',
+        max_length=256,
+    )
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class Genre(models.Model):
-    pass
+    """Модель жанра произведений."""
 
+    slug = models.SlugField(
+        verbose_name='Slug жанра',
+        max_length=50,
+        unique=True,
+    )
+    name = models.CharField(
+        verbose_name='Название жанра',
+        max_length=256,
+    )
+
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+        ordering = ['name']
+    
+    def __str__(self):
+        return self.name
+    
 
 class Title(models.Model):
-    pass
+    """Модель произведения."""
+
+    category = models.ForeignKey(
+        Category,
+        verbose_name='Категория',
+        on_delete=models.SET_NULL,
+        related_name='titles',
+        null=True,
+        blank=True,
+    )
+    description = models.TextField(
+        verbose_name='Описание',
+        null=True,
+        blank=True,
+    )
+    genre = models.ManyToManyField(
+        Genre,
+        verbose_name='Жанр',
+        related_name='titles',
+    )
+    rating = models.IntegerField(
+        verbose_name='Рейтинг произведения',
+        default=None,
+        null=True,
+        blank=True,
+    )
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=200,
+        db_index=True,
+    )
+    year = models.DateTimeField(
+        blank=True,
+        verbose_name='Год выпуска',
+        format="%Y",
+        validators=[validate_year]
+    )
+
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class Review(models.Model):

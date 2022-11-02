@@ -8,3 +8,10 @@ class IsAuthorOrModeratorOrAdminOrReadOnly(permissions.BasePermission):
             (user == obj.author)
             or user.is_admin or user.is_moderator
         )
+
+
+class IsAdminOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return (request.method in permissions.SAFE_METHODS
+                or (request.user.is_authenticated and (
+                    request.user.is_admin or request.user.is_superuser)))

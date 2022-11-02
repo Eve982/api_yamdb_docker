@@ -1,24 +1,36 @@
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import get_object_or_404
 
-from .permissions import IsAuthorOrModeratorOrAdminOrReadOnly
-from .serializers import (CommentSerializer,
-                          ReviewSerializer)
-from .mixins import CreateListViewSet
-from reviews.models import Review, Title
+from .permissions import (IsAuthorOrModeratorOrAdminOrReadOnly,
+                          IsAdminOrReadOnly)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, GetTokenSerializer,
+                          NotAdminSerializer, ReviewSerializer,
+                          SignUpSerializer, TitleReadSerializer,
+                          TitleWriteSerializer, UsersSerializer)
+from .mixins import CreateListDestroyViewSet
+from reviews.models import Category, Genre, Review, Title
 
 
 class UsersViewSet(viewsets.ModelViewSet):
     pass
 
 
-class CategoryViewSet(CreateListViewSet):
-    pass
+class CategoryViewSet(CreateListDestroyViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
-class GenreViewSet(CreateListViewSet):
-    pass
+class GenreViewSet(CreateListDestroyViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -32,8 +44,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ReviewSerializer
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-        IsAuthorOrModeratorOrAdminOrReadOnly
+        IsAuthorOrModeratorOrAdminOrReadOnly,
     )
     pagination_class = PageNumberPagination
 
@@ -59,8 +70,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     """
     serializer_class = CommentSerializer
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-        IsAuthorOrModeratorOrAdminOrReadOnly
+        IsAuthorOrModeratorOrAdminOrReadOnly,
     )
     pagination_class = PageNumberPagination
 
