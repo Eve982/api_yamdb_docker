@@ -3,8 +3,8 @@ from datetime import datetime
 
 
 def validate_year(value):
-    if datetime.now().year < value:
+    if value > datetime.now().year:
         raise ValidationError(
-            message='Год %(value)s больше текущего!',
+            message=f'Год {value} больше текущего!',
             params={'value': value},
         )
