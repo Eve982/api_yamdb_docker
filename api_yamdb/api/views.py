@@ -23,6 +23,7 @@ class CategoryViewSet(CreateListDestroyViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    pagination_class = PageNumberPagination
 
 
 class GenreViewSet(CreateListDestroyViewSet):
@@ -31,6 +32,7 @@ class GenreViewSet(CreateListDestroyViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    pagination_class = PageNumberPagination
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -65,7 +67,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     """
-    Получить список всех комментариев. 
+    Получить список всех комментариев.
     Права доступа: Доступно авторизованным юзерам.
     """
     serializer_class = CommentSerializer

@@ -10,12 +10,12 @@ class Category(models.Model):
     """Модель категории(типа) произведения."""
 
     slug = models.SlugField(
-        verbose_name='Slug категории',
+        'Slug категории',
         max_length=50,
         unique=True,
     )
     name = models.CharField(
-        verbose_name='Название категории',
+        'Название категории',
         max_length=256,
     )
 
@@ -32,12 +32,12 @@ class Genre(models.Model):
     """Модель жанра произведений."""
 
     slug = models.SlugField(
-        verbose_name='Slug жанра',
+        'Slug жанра',
         max_length=50,
         unique=True,
     )
     name = models.CharField(
-        verbose_name='Название жанра',
+        'Название жанра',
         max_length=256,
     )
 
@@ -45,10 +45,10 @@ class Genre(models.Model):
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
         ordering = ['name']
-    
+
     def __str__(self):
         return self.name
-    
+
 
 class Title(models.Model):
     """Модель произведения."""
@@ -62,7 +62,7 @@ class Title(models.Model):
         blank=True,
     )
     description = models.TextField(
-        verbose_name='Описание',
+        'Описание',
         null=True,
         blank=True,
     )
@@ -72,21 +72,20 @@ class Title(models.Model):
         related_name='titles',
     )
     rating = models.IntegerField(
-        verbose_name='Рейтинг произведения',
+        'Рейтинг произведения',
         default=None,
         null=True,
         blank=True,
     )
     name = models.CharField(
-        verbose_name='Название',
+        'Название',
         max_length=200,
         db_index=True,
     )
     year = models.DateTimeField(
+        'Год выпуска',
         blank=True,
-        verbose_name='Год выпуска',
-        format="%Y",
-        validators=[validate_year]
+        validators=(validate_year,)
     )
 
     class Meta:
