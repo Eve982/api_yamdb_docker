@@ -5,42 +5,45 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.tokens import default_token_generator
 from .validators import validate_username, validate_year
-from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    class ChoiseRole(models.TextChoices):
-        ADMIN = "admin", _("Administrator")
-        MODER = "moderator", _("Modererator")
-        USER = "user", _("User")
-    
+    class ChoiseRole(models.CharField):
+        choices = (
+            ('user', 'user'),
+            ('moderator', 'moderator'),
+            ('admin', 'admin')
+        )
+     
     username = models.CharField(
         'Имя пользователя',
         validators=(validate_username,),
         max_length=150,
         unique=True,
         blank=False,
-        null=False
+        null=False,
     )
     email = models.EmailField(
-        _("Электронная почта"),
+        'Электронная почта',
         max_length=254,
         unique=True,
         blank=False,
         null=False
     )
     role = models.CharField(
-        _("Роль"), 
+        'роль',
         max_length=20,
-        choices=ChoiseRole,
-        default=ChoiseRole.USER,
+        choices=ChoiseRole.choices,
+        default='user',
         blank=True
     )
     bio = models.TextField(
-        _("Биография"),
-        blank=True)
-    confirmation_code = models.CharField(     
-        _("Код проверки"),
+        verbose_name='биография',
+        blank=True,
+    )
+
+    confirmation_code = models.CharField(
+        verbose_name='код подтверждения',
         max_length=255,
         null=True,
         blank=False,
@@ -49,18 +52,17 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        if self.role == "admin" or self.is_superuser:
-            return True
+        return self.role == self.RoleChoices.ADMIN
 
     @property
-    def is_moder(self):
-        if self.role == "moderator" or self.is_staff:
-            return True
+    def is_moderator(self):
+        return self.role == self.RoleChoices.MODERATOR
 
-    @property
-    def is_user(self):
-        if self.role == "user":
-            return True
+    def set_admin(self):
+        self.role = self.RoleChoices.ADMIN
+
+    def set_moderator(self):
+        self.role = self.RoleChoices.MODERATOR
 
     class Meta:
         ordering = ('id',)
