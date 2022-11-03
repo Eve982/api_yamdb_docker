@@ -2,8 +2,82 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from .validators import validate_year
 
-# class User(AbstractUser):
-#     pass
+
+class User(AbstractUser):
+    class ChoiseRole(models.CharField):
+        choices = (
+            ('user', 'user'),
+            ('moderator', 'moderator'),
+            ('admin', 'admin')
+        )
+     
+    username = models.CharField(
+        'Имя пользователя',
+        validators=(validate_username,),
+        max_length=150,
+        unique=True,
+        blank=False,
+        null=False,
+    )
+    email = models.EmailField(
+        'Электронная почта',
+        max_length=254,
+        unique=True,
+        blank=False,
+        null=False
+    )
+    role = models.CharField(
+        'роль',
+        max_length=20,
+        choices=ChoiseRole.choices,
+        default='user',
+        blank=True
+    )
+    bio = models.TextField(
+        verbose_name='биография',
+        blank=True,
+    )
+
+    confirmation_code = models.CharField(
+        verbose_name='код подтверждения',
+        max_length=255,
+        null=True,
+        blank=False,
+        default='XXXX'
+    )
+
+    @property
+    def is_admin(self):
+        return self.role == self.RoleChoices.ADMIN
+
+    @property
+    def is_moderator(self):
+        return self.role == self.RoleChoices.MODERATOR
+
+    def set_admin(self):
+        self.role = self.RoleChoices.ADMIN
+
+    def set_moderator(self):
+        self.role = self.RoleChoices.MODERATOR
+
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
+    def __str__(self):
+        return self.username
+
+
+@receiver(post_save, sender=User)
+def post_save(sender, instance, created, **kwargs):
+    if created:
+        confirmation_code = default_token_generator.make_token(
+            instance
+        )
+        instance.confirmation_code = confirmation_code
+        instance.save()
+
 
 
 class Category(models.Model):

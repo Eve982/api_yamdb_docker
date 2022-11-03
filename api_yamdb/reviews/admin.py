@@ -29,3 +29,20 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('review', 'text', 'author',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'username',
+        'email',
+        'role',
+        'bio',
+        'first_name',
+        'last_name',
+        'confirmation_code',
+    )
+    search_fields = ('username', 'role',)
+    list_filter = ('username',)
+    empty_value_display = '-пусто-'
