@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from reviews.models import Comment, Review, Title
+from reviews.models import Comment, Review, Title, Category, Genre
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -21,19 +21,51 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    pass
+    """Сериализатор для категорий (типов) произведений."""
+
+    class Meta:
+        fields = ('name', 'slug')
+        model = Category
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    pass
+    """Сериализатор для жанров"""
+
+    class Meta:
+        fields = ('name', 'slug')
+        model = Genre
 
 
 class TitleReadSerializer(serializers.ModelSerializer):
-    pass
+    """Сериализатор для возврата списка произведений."""
+
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
+    rating = serializers.Field()
+
+    class Meta:
+        fields = ('id', 'name', 'year', 'genre',
+                  'rating', 'category', 'description')
+        model = Title
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
-    pass
+    """Сериализатор для добавления произведений."""
+
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        many=True,
+        queryset=Genre.objects.all()
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all()
+    )
+
+    class Meta:
+        fields = ('id', 'name', 'year', 'genre',
+                  'category', 'description')
+        model = Title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
