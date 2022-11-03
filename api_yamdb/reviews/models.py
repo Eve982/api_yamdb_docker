@@ -8,13 +8,12 @@ from .validators import validate_username, validate_year
 from django.utils.translation import gettext_lazy as _
 
 
-class ChoiseRole(models.TextChoices):
-    USER = 'user', _('User')
-    MODERATOR = 'moderator', _('Moderator')
-    ADMIN = 'admin', _('Admin')
-
-
 class User(AbstractUser):
+    class ChoiseRole(models.TextChoices):
+        ADMIN = "admin", _("Administrator")
+        MODER = "moderator", _("Modererator")
+        USER = "user", _("User")
+    
     username = models.CharField(
         'Имя пользователя',
         validators=(validate_username,),
@@ -24,26 +23,24 @@ class User(AbstractUser):
         null=False
     )
     email = models.EmailField(
-        'Электронная почта',
+        _("Электронная почта"),
         max_length=254,
         unique=True,
         blank=False,
         null=False
     )
     role = models.CharField(
-        'роль',
+        _("Роль"), 
         max_length=20,
         choices=ChoiseRole,
         default=ChoiseRole.USER,
         blank=True
     )
     bio = models.TextField(
-        verbose_name='биография',
-        blank=True,
-    )
-
-    confirmation_code = models.CharField(
-        verbose_name='код подтверждения',
+        _("Биография"),
+        blank=True)
+    confirmation_code = models.CharField(     
+        _("Код проверки"),
         max_length=255,
         null=True,
         blank=False,
@@ -51,16 +48,19 @@ class User(AbstractUser):
     )
 
     @property
-    def is_user(self):
-        return self.role == ChoiseRole.USER
-
-    @property
     def is_admin(self):
-        return self.role == ChoiseRole.ADMIN
+        if self.role == "admin" or self.is_superuser:
+            return True
 
     @property
-    def is_moderator(self):
-        return self.role == ChoiseRole.MODERATOR
+    def is_moder(self):
+        if self.role == "moderator" or self.is_staff:
+            return True
+
+    @property
+    def is_user(self):
+        if self.role == "user":
+            return True
 
     class Meta:
         ordering = ('id',)
