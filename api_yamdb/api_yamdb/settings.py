@@ -107,16 +107,5 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-EMAIL_HOST = 'smtp.gmail.com'
-
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-
-EMAIL_PORT = 587
-
-EMAIL_USE_SSL = False
-
-EMAIL_USE_TLS = True
-
-AUTH_USER_MODEL = 'reviews.User'
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
