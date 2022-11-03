@@ -9,7 +9,7 @@ class IsAuthorOrModeratorOrAdminOrReadOnly(permissions.BasePermission):
             or user.is_admin or user.is_moderator
         )
 
-        
+
 class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS
