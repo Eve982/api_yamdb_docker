@@ -1,5 +1,7 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import (MaxValueValidator,
+                                    MinValueValidator,
+                                    validate_slug)
 from django.contrib.auth.models import AbstractUser
 from .validators import validate_year, validate_username
 from django.dispatch import receiver
@@ -90,6 +92,7 @@ class Category(models.Model):
         'Slug категории',
         max_length=50,
         unique=True,
+        validators=[validate_slug]
     )
     name = models.CharField(
         'Название категории',
