@@ -52,17 +52,17 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == self.RoleChoices.ADMIN
+        return self.role == self.ChoiseRole.ADMIN
 
     @property
     def is_moderator(self):
-        return self.role == self.RoleChoices.MODERATOR
+        return self.role == self.ChoiseRole.MODERATOR
 
     def set_admin(self):
-        self.role = self.RoleChoices.ADMIN
+        self.role = self.ChoiseRole.ADMIN
 
     def set_moderator(self):
-        self.role = self.RoleChoices.MODERATOR
+        self.role = self.ChoiseRole.MODERATOR
 
     class Meta:
         ordering = ('id',)
