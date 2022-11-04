@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import get_object_or_404
@@ -18,6 +19,8 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
+    """Вьюсет для категорий."""
+
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -27,6 +30,8 @@ class CategoryViewSet(CreateListDestroyViewSet):
 
 
 class GenreViewSet(CreateListDestroyViewSet):
+    """Вьюсет для жанров произведений."""
+
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -36,7 +41,31 @@ class GenreViewSet(CreateListDestroyViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    pass
+    """
+    Вьюсет для произведений.
+    Для запросов на чтение используется TitleReadSerializer
+    Для запросов на изменение используется TitleWriteSerializer
+    """
+    queryset = Title.objects.all()
+    serializer_class = TitleReadSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = (
+        'category__slug',
+        'genre__slug',
+        'name',
+        'year'
+    )
+
+    def get_serializer_class(self):
+        if self.action in (
+                'create',
+                'destroy',
+                'update',
+                'partial_update'
+        ):
+            return TitleWriteSerializer
+        return TitleReadSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -55,7 +84,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             Title,
             id=self.kwargs.get('title_id')
         )
-    
+
     def get_queryset(self):
         return self.get_title().reviews.all()
 

@@ -1,15 +1,16 @@
-from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import AbstractUser
-from .validators import validate_year, validate_username
-from django.dispatch import receiver
+from django.db import models
 from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.contrib.auth.tokens import default_token_generator
+
+from .validators import validate_year, validate_username
 
 
 class User(AbstractUser):
     class ChoiseRole(models.CharField):
-        choices = (
+        CHOISES = (
             ('user', 'user'),
             ('moderator', 'moderator'),
             ('admin', 'admin')
@@ -31,17 +32,16 @@ class User(AbstractUser):
         null=False
     )
     role = models.CharField(
-        'роль',
+        'Роль',
         max_length=20,
-        choices=ChoiseRole.choices,
+        choices=ChoiseRole.CHOISES,
         default='user',
         blank=True
     )
     bio = models.TextField(
-        verbose_name='биография',
+        'Биография',
         blank=True,
     )
-
     confirmation_code = models.CharField(
         verbose_name='код подтверждения',
         max_length=255,
@@ -52,17 +52,17 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == self.RoleChoices.ADMIN
+        return self.role == self.ChoiseRole.CHOISES['user']
 
     @property
     def is_moderator(self):
-        return self.role == self.RoleChoices.MODERATOR
+        return self.role == self.ChoiseRole.CHOISES['moderator']
 
     def set_admin(self):
-        self.role = self.RoleChoices.ADMIN
+        self.role = self.ChoiseRole.CHOISES['admin']
 
     def set_moderator(self):
-        self.role = self.RoleChoices.MODERATOR
+        self.role = self.ChoiseRole.CHOISES['moderator']
 
     class Meta:
         ordering = ('id',)
