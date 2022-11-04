@@ -42,10 +42,10 @@ class GenreViewSet(CreateListDestroyViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     """
-        Вьюсет для произведений.
-        Для запросов на чтение используется TitleReadSerializer
-        Для запросов на изменение используется TitleWriteSerializer
-        """
+    Вьюсет для произведений.
+    Для запросов на чтение используется TitleReadSerializer
+    Для запросов на изменение используется TitleWriteSerializer
+    """
     queryset = Title.objects.all()
     serializer_class = TitleReadSerializer
     permission_classes = (IsAdminOrReadOnly,)
