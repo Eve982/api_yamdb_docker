@@ -29,7 +29,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    """Сериализатор для жанров"""
+    """Сериализатор для жанров."""
 
     class Meta:
         fields = ('name', 'slug')

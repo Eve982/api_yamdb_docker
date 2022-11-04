@@ -19,6 +19,8 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
+    """Вьюсет для категорий."""
+
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -27,6 +29,8 @@ class CategoryViewSet(CreateListDestroyViewSet):
 
 
 class GenreViewSet(CreateListDestroyViewSet):
+    """Вьюсет для жанров произведений."""
+
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -35,6 +39,11 @@ class GenreViewSet(CreateListDestroyViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    """
+    Вьюсет для произведений.
+    Для запросов на чтение используется TitleReadSerializer
+    Для запросов на изменение используется TitleWriteSerializer
+    """
     queryset = Title.objects.all()
     serializer_class = TitleReadSerializer
     permission_classes = (IsAdminOrReadOnly,)
