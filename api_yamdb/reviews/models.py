@@ -10,7 +10,7 @@ from .validators import validate_year, validate_username
 
 class User(AbstractUser):
     class ChoiseRole(models.CharField):
-        choices = (
+        CHOISES = (
             ('user', 'user'),
             ('moderator', 'moderator'),
             ('admin', 'admin')
@@ -34,7 +34,7 @@ class User(AbstractUser):
     role = models.CharField(
         'Роль',
         max_length=20,
-        choices=ChoiseRole.choices,
+        choices=ChoiseRole.CHOISES,
         default='user',
         blank=True
     )
@@ -52,17 +52,17 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == self.ChoiseRole.ADMIN
+        return self.role == self.ChoiseRole.CHOISES['user']
 
     @property
     def is_moderator(self):
-        return self.role == self.ChoiseRole.MODERATOR
+        return self.role == self.ChoiseRole.CHOISES['moderator']
 
     def set_admin(self):
-        self.role = self.ChoiseRole.ADMIN
+        self.role = self.ChoiseRole.CHOISES['admin']
 
     def set_moderator(self):
-        self.role = self.ChoiseRole.MODERATOR
+        self.role = self.ChoiseRole.CHOISES['moderator']
 
     class Meta:
         ordering = ('id',)
