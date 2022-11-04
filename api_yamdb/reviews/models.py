@@ -1,6 +1,10 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from .validators import validate_year
+from django.contrib.auth.models import AbstractUser
+from .validators import validate_year, validate_username
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.contrib.auth.tokens import default_token_generator
 
 
 class User(AbstractUser):
@@ -10,7 +14,7 @@ class User(AbstractUser):
             ('moderator', 'moderator'),
             ('admin', 'admin')
         )
-     
+
     username = models.CharField(
         'Имя пользователя',
         validators=(validate_username,),
@@ -77,7 +81,6 @@ def post_save(sender, instance, created, **kwargs):
         )
         instance.confirmation_code = confirmation_code
         instance.save()
-
 
 
 class Category(models.Model):
@@ -184,15 +187,12 @@ class Review(models.Model):
         'Текст отзыва',
         max_length=200
     )
-    author = models.IntegerField(
-        'ID пользователя'
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        verbose_name='Автор'
     )
-    # author = models.ForeignKey(
-    #     User,
-    #     on_delete=models.CASCADE,
-    #     related_name='reviews',
-    #     verbose_name='Автор'
-    # )
     score = models.IntegerField(
         'Оценка',
         validators=(
@@ -237,15 +237,12 @@ class Comment(models.Model):
         'Текст комментария',
         max_length=200
     )
-    author = models.IntegerField(
-        'ID пользователя'
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Автор'
     )
-    # author = models.ForeignKey(
-    #     User,
-    #     on_delete=models.CASCADE,
-    #     related_name='comments',
-    #     verbose_name='Автор'
-    # )
     pub_date = models.DateTimeField(
         'Дата публикации отзыва',
         auto_now_add=True,
@@ -259,5 +256,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text
-
-# rfsfsdffs
