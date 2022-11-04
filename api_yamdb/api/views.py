@@ -74,7 +74,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             Title,
             id=self.kwargs.get('title_id')
         )
-    
+
     def get_queryset(self):
         return self.get_title().reviews.all()
 
