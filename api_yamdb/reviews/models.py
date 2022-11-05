@@ -1,4 +1,4 @@
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, validate_slug
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save
@@ -23,6 +23,11 @@ class User(AbstractUser):
         unique=True,
         blank=False,
         null=False,
+        help_text='Набор символов не более 30.'
+                  'Только буквы, цифры и @/./+/-/_',
+        error_messages={
+            'unique': "Пользователь с таким именем уже существует!",
+        },
     )
     email = models.EmailField(
         'Электронная почта',
@@ -52,25 +57,29 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == self.ChoiseRole.CHOISES['user']
+        return self.role == 'admin'
 
     @property
     def is_moderator(self):
-        return self.role == self.ChoiseRole.CHOISES['moderator']
+        return self.role == 'moderator'
 
-    def set_admin(self):
-        self.role = self.ChoiseRole.CHOISES['admin']
-
-    def set_moderator(self):
-        self.role = self.ChoiseRole.CHOISES['moderator']
+    @property
+    def is_user(self):
+        return self.role == 'user'
 
     class Meta:
         ordering = ('id',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['username', 'email'],
+                name='unique_username_email',
+            )
+        ]
 
     def __str__(self):
-        return self.username
+        return f'{self.username} {self.email} {self.role}'
 
 
 @receiver(post_save, sender=User)
@@ -90,6 +99,7 @@ class Category(models.Model):
         'Slug категории',
         max_length=50,
         unique=True,
+        validators=[validate_slug],
     )
     name = models.CharField(
         'Название категории',
@@ -112,6 +122,7 @@ class Genre(models.Model):
         'Slug жанра',
         max_length=50,
         unique=True,
+        validators=[validate_slug],
     )
     name = models.CharField(
         'Название жанра',
@@ -133,14 +144,11 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         verbose_name='Категория',
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name='titles',
-        null=True,
-        blank=True,
     )
     description = models.TextField(
         'Описание',
-        null=True,
         blank=True,
     )
     genre = models.ManyToManyField(
@@ -150,8 +158,7 @@ class Title(models.Model):
     )
     rating = models.IntegerField(
         'Рейтинг произведения',
-        default=None,
-        null=True,
+        # null=True,
         blank=True,
     )
     name = models.CharField(
@@ -159,9 +166,8 @@ class Title(models.Model):
         max_length=200,
         db_index=True,
     )
-    year = models.DateTimeField(
+    year = models.IntegerField(
         'Год выпуска',
-        blank=True,
         validators=(validate_year,)
     )
 
@@ -206,7 +212,6 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         'Дата публикации отзыва',
         auto_now_add=True,
-        db_index=True
     )
 
     class Meta:
@@ -246,7 +251,7 @@ class Comment(models.Model):
     pub_date = models.DateTimeField(
         'Дата публикации отзыва',
         auto_now_add=True,
-        db_index=True
+        # db_index=True
     )
 
     class Meta:
