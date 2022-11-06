@@ -16,4 +16,3 @@ class CreateListDestroyViewSet(
     pagination_class = PageNumberPagination
     search_fields = ['name']
     lookup_field = 'slug'
-
