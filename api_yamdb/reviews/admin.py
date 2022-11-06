@@ -1,59 +1,37 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
 from .models import Category, Comment, Genre, Review, Title, User
 
 
+admin.site.register(User, UserAdmin)
+
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
-        'title',
-        'text',
-        'author',
-        'score',
+        'pk', 'title', 'text',
+        'author', 'score', 'pub_date',
     )
-    search_fields = ('title', 'author', 'pub_date',)
+    search_fields = ('title', 'author', 'pub_date')
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
+
 
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
-        'review',
-        'text',
-        'author',
-        'pub_date',
+        'pk', 'review', 'text',
+        'author', 'pub_date',
     )
-    search_fields = ('review', 'text', 'author',)
+    search_fields = ('review', 'author', 'pub_date')
     list_filter = ('pub_date',)
-    empty_value_display = '-пусто-'
-
-
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = (
-        'pk',
-        'username',
-        'email',
-        'role',
-        'bio',
-        'first_name',
-        'last_name',
-        'confirmation_code',
-    )
-    search_fields = ('username', 'role',)
-    list_filter = ('username',)
     empty_value_display = '-пусто-'
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'slug',
-    )
+    list_display = ('pk', 'name', 'slug')
     search_fields = ('name',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
@@ -61,10 +39,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'slug',
-    )
+    list_display = ('pk', 'name', 'slug')
     search_fields = ('name',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
@@ -73,11 +48,8 @@ class GenreAdmin(admin.ModelAdmin):
 @admin.register(Title)
 class TitleAdmin(admin.ModelAdmin):
     list_display = (
-        'name',
-        'year',
-        'category',
-        'description',
-        'rating',
+        'pk', 'name', 'year',
+        'description', 'category',
     )
     search_fields = ('name',)
     list_filter = ('name',)
