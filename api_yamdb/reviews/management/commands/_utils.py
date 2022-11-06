@@ -111,4 +111,3 @@ def get_data():
                 pub_date=row['pub_date'],
             )
             p.save()
-
