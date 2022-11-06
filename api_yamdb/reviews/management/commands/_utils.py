@@ -1,4 +1,6 @@
 import csv
+from pprint import pprint
+
 from reviews.models import (
     Category, Genre, Title, Review, Comment, User
 )
@@ -13,8 +15,8 @@ def get_data():
         Category.objects.all().delete()
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            print(row)
             category = Category(
+                id=row['id'],
                 name=row['name'],
                 slug=row['slug'],
             )
@@ -24,8 +26,8 @@ def get_data():
         Genre.objects.all().delete()
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            print(row)
             genre = Genre(
+                id=row['id'],
                 name=row['name'],
                 slug=row['slug'],
             )
@@ -35,8 +37,8 @@ def get_data():
         User.objects.all().delete()
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            print(row)
             user = User(
+                id=row['id'],
                 username=row['username'],
                 email=row['email'],
                 role=row['role'],
@@ -50,22 +52,20 @@ def get_data():
         Title.objects.all().delete()
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            print(row)
-            category = Category.objects.get_or_create(id=row['category'])
-            print(category)
+            category, created = Category.objects.get_or_create(id=row['category'])
             title = Title(
+                id=row['id'],
                 name=row['name'],
                 year=row['year'],
-                category_id=category,
+                category=category,
             )
             title.save()
 
     with open(FILE_DIR + r'\genre_title.csv', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            print(row)
-            title = Title.objects.get_or_create(id=row['title_id'])
-            genre = Genre.objects.get_or_create(id=row['genre_id'])
+            title, created = Title.objects.get_or_create(id=row['title_id'])
+            genre, created = Genre.objects.get_or_create(id=row['genre_id'])
             title.genre.add(genre)
             title.save()
 
@@ -73,29 +73,28 @@ def get_data():
         Review.objects.all().delete()
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            print(row)
-            title = Title.objects.get_or_create(id=row['title_id'])
-            author = User.objects.get_or_create(id=row['author'])
-            p = Review(
+            title, created = Title.objects.get_or_create(id=row['title_id'])
+            author, created = User.objects.get_or_create(id=row['author'])
+            review = Review(
+                id=row['id'],
                 title=title,
                 text=row['text'],
                 author=author,
                 score=row['score'],
                 pub_date=row['pub_date'],
             )
-            p.save()
+            review.save()
 
     with open(FILE_DIR + r'\comments.csv', encoding="utf-8") as csvfile:
         Comment.objects.all().delete()
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            print(row)
-            review_id = Review.objects.get_or_create(id=row['review_id'])
-            author_id = User.objects.get_or_create(id=row['author'])
+            review_id, created = Review.objects.get_or_create(id=row['review_id'])
+            author_id, created = User.objects.get_or_create(id=row['author'])
             p = Comment(
-                review_id=review_id,
+                review=review_id,
                 text=row['text'],
-                author_id=author_id,
+                author=author_id,
                 pub_date=row['pub_date'],
             )
             p.save()

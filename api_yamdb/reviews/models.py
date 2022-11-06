@@ -162,7 +162,7 @@ class Title(models.Model):
         max_length=200,
         db_index=True,
     )
-    year = models.DateTimeField(
+    year = models.IntegerField(
         'Год выпуска',
         blank=True,
         validators=(validate_year,)

@@ -7,3 +7,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         get_data()
+
+    print('Выполнен импорт из файлов *.csv /static/data/')
