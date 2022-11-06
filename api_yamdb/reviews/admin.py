@@ -6,6 +6,7 @@ from .models import Category, Comment, Genre, Review, Title, User
 
 admin.site.register(User, UserAdmin)
 
+
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display = (
@@ -15,7 +16,6 @@ class ReviewAdmin(admin.ModelAdmin):
     search_fields = ('title', 'author', 'pub_date')
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
-
 
 
 @admin.register(Comment)

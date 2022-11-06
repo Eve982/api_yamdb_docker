@@ -1,5 +1,4 @@
 import csv
-from pprint import pprint
 
 from reviews.models import (
     Category, Genre, Title, Review, Comment, User
@@ -52,7 +51,9 @@ def get_data():
         Title.objects.all().delete()
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            category, created = Category.objects.get_or_create(id=row['category'])
+            category, created = Category.objects.get_or_create(
+                id=row['category']
+            )
             title = Title(
                 id=row['id'],
                 name=row['name'],
@@ -64,8 +65,12 @@ def get_data():
     with open(FILE_DIR + r'\genre_title.csv', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            title, created = Title.objects.get_or_create(id=row['title_id'])
-            genre, created = Genre.objects.get_or_create(id=row['genre_id'])
+            title, created = Title.objects.get_or_create(
+                id=row['title_id']
+            )
+            genre, created = Genre.objects.get_or_create(
+                id=row['genre_id']
+            )
             title.genre.add(genre)
             title.save()
 
@@ -73,8 +78,12 @@ def get_data():
         Review.objects.all().delete()
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            title, created = Title.objects.get_or_create(id=row['title_id'])
-            author, created = User.objects.get_or_create(id=row['author'])
+            title, created = Title.objects.get_or_create(
+                id=row['title_id']
+            )
+            author, created = User.objects.get_or_create(
+                id=row['author']
+            )
             review = Review(
                 id=row['id'],
                 title=title,
@@ -89,8 +98,12 @@ def get_data():
         Comment.objects.all().delete()
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            review_id, created = Review.objects.get_or_create(id=row['review_id'])
-            author_id, created = User.objects.get_or_create(id=row['author'])
+            review_id, created = Review.objects.get_or_create(
+                id=row['review_id']
+            )
+            author_id, created = User.objects.get_or_create(
+                id=row['author']
+            )
             p = Comment(
                 review=review_id,
                 text=row['text'],
