@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
-from reviews.models import Comment, Review, Title, Category, Genre, User
+from reviews.models import (Comment, Review,
+                            Title, Category,
+                            Genre, User)
 
 
 class SingUpSerializer(serializers.ModelSerializer):
@@ -9,14 +11,6 @@ class SingUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email')
-
-    def validate_username(self, value):
-        """
-        Проверяет невозможность создания пользователя с ником 'me'
-        """
-        if value == 'me':
-            raise serializers.ValidationError('Недопустимое имя пользователя')
-        return value
 
     def create(self, validated_data):
         user = User.objects.create(
@@ -43,6 +37,7 @@ class GetTokenSerializer(serializers.Serializer):
 class UsersSerializer(serializers.ModelSerializer):
 
     class Meta:
+        abstract = True
         model = User
         fields = (
             'username', 'email', 'first_name',
@@ -139,7 +134,9 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         title = self.context['view'].kwargs.get('title_id')
 
-        if Review.objects.filter(author=request.user, title=title).exists():
+        if Review.objects.filter(
+            author=request.user, title=title
+        ).exists():
             raise serializers.ValidationError(
                 'Вы уже оставили отзыв!')
         return data

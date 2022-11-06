@@ -193,7 +193,7 @@ class Review(ReviewAndCommentModel):
         constraints = [
             models.UniqueConstraint(
                 fields=('title', 'author',),
-                name='unique_review'
+                name='unique_review',
             )
         ]
 
