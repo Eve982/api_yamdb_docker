@@ -74,7 +74,7 @@ class User(AbstractUser):
         unique=True,
         blank=False,
         null=False,
-        help_text='Набор символов не более 30.'
+        help_text='Набор символов не более 150.'
                   'Только буквы, цифры и @/./+/-/_',
         error_messages={
             'unique': "Пользователь с таким именем уже существует!",
@@ -111,6 +111,18 @@ class User(AbstractUser):
                 name='unique_username_email',
             )
         ]
+
+    @property
+    def is_user(self):
+        return self.role == self.USER
+
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN or self.is_superuser or self.is_staff
 
     def __str__(self):
         return f'{self.username} {self.email} {self.role}'
