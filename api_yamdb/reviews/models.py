@@ -56,12 +56,16 @@ class ReviewAndCommentModel(models.Model):
 
 
 class User(AbstractUser):
-    class ChoiseRole(models.CharField):
-        CHOISES = (
-            ('user', 'user'),
-            ('moderator', 'moderator'),
-            ('admin', 'admin')
-        )
+
+    USER = 'user'
+    ADMIN = 'admin'
+    MODERATOR = 'moderator'
+
+    ROLE_CHOICES = [
+        (USER, USER),
+        (ADMIN, ADMIN),
+        (MODERATOR, MODERATOR),
+    ]
 
     username = models.CharField(
         'Имя пользователя',
@@ -86,8 +90,8 @@ class User(AbstractUser):
     role = models.CharField(
         'Роль',
         max_length=settings.LENG_CUT,
-        choices=ChoiseRole.CHOISES,
-        default='user',
+        choices=ROLE_CHOICES,
+        default=USER,
         blank=True
     )
     bio = models.TextField(
