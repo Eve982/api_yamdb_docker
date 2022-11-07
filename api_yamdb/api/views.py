@@ -42,7 +42,7 @@ def sent_confirmation_code(request):
 
 class SignUp(views.APIView):
     """Функция регистрации новых пользователей."""
-    queryset = User.objects.all()
+
     serializer_class = SingUpSerializer
     permission_classes = [permissions.AllowAny]
 
