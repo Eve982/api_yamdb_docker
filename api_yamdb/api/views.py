@@ -13,7 +13,7 @@ from rest_framework.generics import get_object_or_404
 from .filters import FilterForTitle
 from .permissions import (IsAdmin, IsAuthorOrModeratorOrAdminOrReadOnly,
                           IsAdminOrReadOnly)
-from .serializers import (ConfirmationCodeSerializer, ReviewSerializer,
+from .serializers import (ConfirmationCodeSerializer,
                           CategorySerializer, CommentSerializer,
                           GenreSerializer, GetTokenSerializer,
                           PersSerializer, ReviewCreateSerializer,
@@ -141,15 +141,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """Отображение действий с отзывами."""
 
-    serializer_class = ReviewSerializer
+    serializer_class = ReviewCreateSerializer
     permission_classes = (
         IsAuthorOrModeratorOrAdminOrReadOnly,
     )
-
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return ReviewCreateSerializer
-        return ReviewSerializer
 
     def get_title(self):
         return get_object_or_404(
