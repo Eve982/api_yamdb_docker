@@ -45,7 +45,7 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class PersSerializer(UsersSerializer):
-    """Сериализатор для пользователей"""
+    """Сериализатор для пользователей."""
     role = serializers.CharField(read_only=True)
 
 
@@ -116,7 +116,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date')
-        read_only_fields = ('id',)
+        read_only = ('id',)
 
 
 class ReviewCreateSerializer(serializers.ModelSerializer):
@@ -128,7 +128,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date')
-        read_only_fields = ('title',)
+        read_only = ('id',)
 
     def validate(self, data):
         request = self.context.get('request')
@@ -152,4 +152,4 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'text', 'author', 'pub_date')
-        read_only_fields = ('review',)
+        read_only = ('id',)

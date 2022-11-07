@@ -34,11 +34,11 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         )
 
 
-class UsersPermission(permissions.BasePermission):
-    """Разрешения для действий с пользователями для пользователей."""
+# class UsersPermission(permissions.BasePermission):
+#     """Разрешения для действий с пользователями для пользователей."""
 
-    def has_permission(self, request, view):
-        return request.user.is_authenticated
+#     def has_permission(self, request, view):
+#         return request.user.is_authenticated
 
-    def has_object_permission(self, view, request, obj):
-        return request.method in ('PATCH', 'GET')
+#     def has_object_permission(self, view, request, obj):
+#         return request.method in ('PATCH', 'GET')

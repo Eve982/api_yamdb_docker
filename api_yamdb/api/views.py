@@ -12,7 +12,7 @@ from rest_framework.generics import get_object_or_404
 
 from .filters import FilterForTitle
 from .permissions import (IsAdmin, IsAuthorOrModeratorOrAdminOrReadOnly,
-                          IsAdminOrReadOnly, UsersPermission)
+                          IsAdminOrReadOnly)
 from .serializers import (ConfirmationCodeSerializer, ReviewSerializer,
                           CategorySerializer, CommentSerializer,
                           GenreSerializer, GetTokenSerializer,
@@ -86,7 +86,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     @action(
         methods=['GET', 'PATCH'],
         detail=False,
-        permission_classes=[UsersPermission]
+        permission_classes=[permissions.IsAuthenticated]
     )
     def me(self, request):
         user = request.user
