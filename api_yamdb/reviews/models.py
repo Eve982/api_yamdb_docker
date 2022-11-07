@@ -156,7 +156,8 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         'Год выпуска',
-        validators=(validate_year,)
+        db_index=True,
+        validators=(validate_year,),
     )
 
     class Meta:
