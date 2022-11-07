@@ -3,6 +3,7 @@ from django.core.validators import (MaxValueValidator,
                                     validate_slug)
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
 
 from .validators import validate_year, validate_username
 
@@ -12,13 +13,13 @@ class GenreAndCategoryModel(models.Model):
 
     slug = models.SlugField(
         'Slug',
-        max_length=50,
+        max_length=settings.LENG_SLUG,
         unique=True,
         validators=[validate_slug],
     )
     name = models.CharField(
         'Название',
-        max_length=256,
+        max_length=settings.LENG_MAX,
     )
 
     class Meta:
@@ -26,7 +27,7 @@ class GenreAndCategoryModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return self.name[:30]
+        return self.name[:settings.LENG_CUT]
 
 
 class ReviewAndCommentModel(models.Model):
@@ -34,7 +35,7 @@ class ReviewAndCommentModel(models.Model):
 
     text = models.CharField(
         'Текст отзыва',
-        max_length=200
+        max_length=settings.LENG_MAX
     )
     author = models.ForeignKey(
         'User',
@@ -51,7 +52,7 @@ class ReviewAndCommentModel(models.Model):
         ordering = ('-pub_date',)
 
     def __str__(self):
-        return self.text[:30]
+        return self.text[:settings.LENG_CUT]
 
 
 class User(AbstractUser):
@@ -65,7 +66,7 @@ class User(AbstractUser):
     username = models.CharField(
         'Имя пользователя',
         validators=(validate_username,),
-        max_length=150,
+        max_length=settings.LENG_DATA_USER,
         unique=True,
         blank=False,
         null=False,
@@ -77,14 +78,14 @@ class User(AbstractUser):
     )
     email = models.EmailField(
         'Электронная почта',
-        max_length=254,
+        max_length=settings.LENG_EMAIL,
         unique=True,
         blank=False,
         null=False
     )
     role = models.CharField(
         'Роль',
-        max_length=20,
+        max_length=settings.LENG_CUT,
         choices=ChoiseRole.CHOISES,
         default='user',
         blank=True
@@ -141,7 +142,7 @@ class Title(models.Model):
     description = models.TextField(
         'Описание',
         db_index=True,
-        max_length=200,
+        max_length=settings.LENG_MAX,
         blank=True,
     )
     genre = models.ManyToManyField(
@@ -151,12 +152,13 @@ class Title(models.Model):
     )
     name = models.CharField(
         'Название',
-        max_length=200,
+        max_length=settings.LENG_MAX,
         db_index=True,
     )
     year = models.IntegerField(
         'Год выпуска',
-        validators=(validate_year,)
+        db_index=True,
+        validators=(validate_year,),
     )
 
     class Meta:
@@ -172,18 +174,19 @@ class Review(ReviewAndCommentModel):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='reviews',
         verbose_name='Произведение'
     )
     score = models.IntegerField(
         'Оценка',
+        db_index=True,
         validators=(
             MinValueValidator(1),
             MaxValueValidator(10)
         ),
         error_messages={
             'validators': 'Оценка от 1 до 10!'
-        }
+        },
+        default=1
     )
 
     class Meta(ReviewAndCommentModel.Meta):
@@ -204,7 +207,6 @@ class Comment(ReviewAndCommentModel):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        related_name='comments',
         verbose_name='Отзыв'
     )
 
