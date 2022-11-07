@@ -173,18 +173,19 @@ class Review(ReviewAndCommentModel):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='reviews',
         verbose_name='Произведение'
     )
     score = models.IntegerField(
         'Оценка',
+        db_index=True,
         validators=(
             MinValueValidator(1),
             MaxValueValidator(10)
         ),
         error_messages={
             'validators': 'Оценка от 1 до 10!'
-        }
+        },
+        default=1
     )
 
     class Meta(ReviewAndCommentModel.Meta):
