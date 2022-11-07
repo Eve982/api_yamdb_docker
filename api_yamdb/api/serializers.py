@@ -118,7 +118,7 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
 
 class ReviewCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания отзывов/"""
+    """Сериализатор для создания отзывов.g"""
 
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True, many=False,)
