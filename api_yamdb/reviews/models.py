@@ -24,7 +24,7 @@ class GenreAndCategoryModel(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['name']
+        ordering = ('name', )
 
     def __str__(self):
         return self.name[:settings.LENG_CUT]
@@ -99,7 +99,7 @@ class User(AbstractUser):
         blank=True,
     )
 
-    REQUIRED_FIELDS = ['email', ]
+    REQUIRED_FIELDS = ('email', )
 
     class Meta:
         ordering = ('id',)
@@ -168,7 +168,7 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-        ordering = ['name']
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
