@@ -62,9 +62,9 @@ class User(AbstractUser):
     MODERATOR = 'moderator'
 
     ROLE_CHOICES = [
-        (USER, USER),
-        (ADMIN, ADMIN),
-        (MODERATOR, MODERATOR),
+        (USER, 'user'),
+        (ADMIN, 'admin'),
+        (MODERATOR, 'moderator'),
     ]
 
     username = models.CharField(
@@ -89,7 +89,7 @@ class User(AbstractUser):
     )
     role = models.CharField(
         'Роль',
-        max_length=settings.LENG_CUT,
+        max_length=max(len(role) for role, _ in ROLE_CHOICES),
         choices=ROLE_CHOICES,
         default=USER,
         blank=True
@@ -159,7 +159,7 @@ class Title(models.Model):
         max_length=settings.LENG_MAX,
         db_index=True,
     )
-    year = models.IntegerField(
+    year = models.SmallIntegerField(
         'Год выпуска',
         db_index=True,
         validators=(validate_year,),
@@ -180,7 +180,7 @@ class Review(ReviewAndCommentModel):
         on_delete=models.CASCADE,
         verbose_name='Произведение'
     )
-    score = models.IntegerField(
+    score = models.SmallIntegerField(
         'Оценка',
         db_index=True,
         validators=(
