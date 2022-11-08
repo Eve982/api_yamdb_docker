@@ -1,8 +1,11 @@
 from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
+from django.db import IntegrityError
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg
+from django.utils.crypto import get_random_string
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework import (permissions, viewsets,
                             views, filters,
@@ -12,9 +15,8 @@ from rest_framework.generics import get_object_or_404
 
 from .filters import FilterForTitle
 from .permissions import (IsAdmin, IsAuthorOrModeratorOrAdminOrReadOnly,
-                          IsAdminOrReadOnly, UsersPermission)
-from .serializers import (ConfirmationCodeSerializer, ReviewSerializer,
-                          CategorySerializer, CommentSerializer,
+                          IsAdminOrReadOnly)
+from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, GetTokenSerializer,
                           PersSerializer, ReviewCreateSerializer,
                           SingUpSerializer, TitleReadSerializer,
@@ -25,31 +27,34 @@ from reviews.models import Category, Genre, Review, Title, User
 
 def sent_confirmation_code(request):
     """Функция отправки кода подтверждения при регистрации."""
-    serializer = ConfirmationCodeSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get('username')
-    email = serializer.validated_data.get('email')
-    user = get_object_or_404(User, username=username)
-    confirmation_code = default_token_generator.make_token(user)
-    return send_mail(
-        'Код подтверждения',
-        f'Ваш код подтверждения: {confirmation_code}',
-        [settings.DEFAULT_FROM_EMAIL],
-        [email],
-        fail_silently=False,
+    user = get_object_or_404(User, email=request.data["email"])
+    confirmation_code = get_random_string()
+    user.confirmation_code = confirmation_code
+    user.save()
+    send_mail(
+        subject="Код для генерации токена аутентификации",
+        message=str(confirmation_code),
+        from_email=settings.LENG_EMAIL,
+        recipient_list=(request.data["email"],),
+    )
+    return response.Response(
+        data="Письмо с кодом для аутентификации",
+        status=status.HTTP_201_CREATED,
     )
 
 
 class SignUp(views.APIView):
     """Функция регистрации новых пользователей."""
-    queryset = User.objects.all()
+
     serializer_class = SingUpSerializer
-    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        user, _ = get_user_model().objects.get_or_create(
+            username=serializer.data.get('username'),
+            email=serializer.data.get('email'),
+        )
         sent_confirmation_code(request)
         return response.Response(request.data, status=status.HTTP_200_OK)
 
@@ -86,7 +91,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     @action(
         methods=['GET', 'PATCH'],
         detail=False,
-        permission_classes=[UsersPermission]
+        permission_classes=[permissions.IsAuthenticated]
     )
     def me(self, request):
         user = request.user
@@ -125,12 +130,13 @@ class TitleViewSet(viewsets.ModelViewSet):
     Для запросов на чтение используется TitleReadSerializer
     Для запросов на изменение используется TitleWriteSerializer
     """
-    queryset = Title.objects.order_by('name').all().annotate(
+    queryset = Title.objects.all().annotate(
         Avg('reviews__score')
     )
     permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter, )
     filterset_class = FilterForTitle
+    ordering = ('name',)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -141,15 +147,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """Отображение действий с отзывами."""
 
-    serializer_class = ReviewSerializer
+    serializer_class = ReviewCreateSerializer
     permission_classes = (
         IsAuthorOrModeratorOrAdminOrReadOnly,
     )
-
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return ReviewCreateSerializer
-        return ReviewSerializer
 
     def get_title(self):
         return get_object_or_404(

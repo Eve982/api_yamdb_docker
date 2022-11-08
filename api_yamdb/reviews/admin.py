@@ -1,10 +1,23 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 
 from .models import Category, Comment, Genre, Review, Title, User
 
 
-admin.site.register(User, UserAdmin)
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    """Админка Пользователей."""
+
+    list_display = (
+        'username',
+        'email',
+        'role',
+        'bio',
+        'first_name',
+        'last_name',
+    )
+    list_editable = ('role')
+    list_filter = ('username', )
+    search_fields = ('username', 'role',)
 
 
 @admin.register(Review)
@@ -53,4 +66,5 @@ class TitleAdmin(admin.ModelAdmin):
     )
     search_fields = ('name',)
     list_filter = ('name',)
+    list_editable = ('category')
     empty_value_display = '-пусто-'

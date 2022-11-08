@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 
-from .validators import validate_year, validate_username
+from .validators import validate_year, UsernameRegexValidator, username_me
 
 
 class GenreAndCategoryModel(models.Model):
@@ -24,7 +24,7 @@ class GenreAndCategoryModel(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['name']
+        ordering = ('name', )
 
     def __str__(self):
         return self.name[:settings.LENG_CUT]
@@ -56,21 +56,25 @@ class ReviewAndCommentModel(models.Model):
 
 
 class User(AbstractUser):
-    class ChoiseRole(models.CharField):
-        CHOISES = (
-            ('user', 'user'),
-            ('moderator', 'moderator'),
-            ('admin', 'admin')
-        )
+
+    USER = 'user'
+    ADMIN = 'admin'
+    MODERATOR = 'moderator'
+
+    ROLE_CHOICES = [
+        (USER, 'user'),
+        (ADMIN, 'admin'),
+        (MODERATOR, 'moderator'),
+    ]
 
     username = models.CharField(
         'Имя пользователя',
-        validators=(validate_username,),
+        validators=(UsernameRegexValidator(), username_me),
         max_length=settings.LENG_DATA_USER,
         unique=True,
         blank=False,
         null=False,
-        help_text='Набор символов не более 30.'
+        help_text='Набор символов не более 150.'
                   'Только буквы, цифры и @/./+/-/_',
         error_messages={
             'unique': "Пользователь с таким именем уже существует!",
@@ -85,9 +89,9 @@ class User(AbstractUser):
     )
     role = models.CharField(
         'Роль',
-        max_length=settings.LENG_CUT,
-        choices=ChoiseRole.CHOISES,
-        default='user',
+        max_length=max(len(role) for role, _ in ROLE_CHOICES),
+        choices=ROLE_CHOICES,
+        default=USER,
         blank=True
     )
     bio = models.TextField(
@@ -95,7 +99,7 @@ class User(AbstractUser):
         blank=True,
     )
 
-    REQUIRED_FIELDS = ['email', ]
+    REQUIRED_FIELDS = ('email', )
 
     class Meta:
         ordering = ('id',)
@@ -107,6 +111,18 @@ class User(AbstractUser):
                 name='unique_username_email',
             )
         ]
+
+    @property
+    def is_user(self):
+        return self.role == self.USER
+
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN or self.is_superuser or self.is_staff
 
     def __str__(self):
         return f'{self.username} {self.email} {self.role}'
@@ -155,7 +171,7 @@ class Title(models.Model):
         max_length=settings.LENG_MAX,
         db_index=True,
     )
-    year = models.IntegerField(
+    year = models.SmallIntegerField(
         'Год выпуска',
         db_index=True,
         validators=(validate_year,),
@@ -164,7 +180,7 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-        ordering = ['name']
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -176,7 +192,7 @@ class Review(ReviewAndCommentModel):
         on_delete=models.CASCADE,
         verbose_name='Произведение'
     )
-    score = models.IntegerField(
+    score = models.SmallIntegerField(
         'Оценка',
         db_index=True,
         validators=(

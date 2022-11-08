@@ -5,12 +5,6 @@
 Произведения делятся на категории: «Книги», «Фильмы», «Музыка».
 Список категорий (Category) может быть расширен (например, можно добавить категорию «Изобразительное искусство» или «Ювелирка»).
 
-Команда разработки:
-- :white_check_mark: [EvgVol (в роли Python-разработчика Тимлид - разработчик 1)](https://github.com/evgvol)
-- :white_check_mark: [Mikhail Dudin (в роли Python-разработчика - разработчик 2)](https://github.com/dude-inn)
-- :white_check_mark: [saniusster (в роли Python-разработчика - разработчик 3)](https://github.com/saniusster)
-
-
 Произведению может быть присвоен жанр из списка предустановленных (например, «Сказка», «Рок» или «Артхаус»).
 
 Добавлять произведения, категории и жанры может только администратор.
@@ -22,7 +16,48 @@
 Полная документация к API находится по эндпоинту /redoc
 
 ### Стек технологий использованный в проекте:
-- Python 3.7
-- Django 2.2.28
-- DRF
-- JWT
+-   Python
+-   Django
+-   Django REST Framework
+-   REST API
+-   SQLite
+-   Аутентификация по JWT-токену
+
+## Запуск проекта
+1. Клонирование репозитория
+```
+git clone https://github.com/EvgVol/api_yamdb.git
+```
+
+Откройте в своем редакторе кода локальный проекта из репозитория GitHub, клонированного ранее
+
+2. Развертывание в репозитории виртуального окружения
+```
+python3 -m venv venv
+```
+3. Запуск виртуального окружения
+```
+source venv/Scripts/activate
+```
+4. Установка зависимостей в виртуальном окружении
+```
+pip install -r requirements.txt
+```
+
+5. Выполнение миграций
+```
+python manage.py migrate
+```
+
+6. Запуск проекта
+```
+python manage.py runserver
+```
+
+## Документация
+Документация будет доступна после запуска проекта по адресу `/redoc/`.
+
+## Авторы
+- :white_check_mark: [EvgVol (в роли Python-разработчика Тимлид - разработчик 1)](https://github.com/evgvol)
+- :white_check_mark: [Mikhail Dudin (в роли Python-разработчика - разработчик 2)](https://github.com/dude-inn)
+- :white_check_mark: [saniusster (в роли Python-разработчика - разработчик 3)](https://github.com/saniusster)
