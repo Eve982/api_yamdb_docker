@@ -3,6 +3,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg
+from django.utils.crypto import get_random_string
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework import (permissions, viewsets,
                             views, filters,
@@ -25,18 +26,19 @@ from reviews.models import Category, Genre, Review, Title, User
 
 def sent_confirmation_code(request):
     """Функция отправки кода подтверждения при регистрации."""
-    serializer = ConfirmationCodeSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get('username')
-    email = serializer.validated_data.get('email')
-    user = get_object_or_404(User, username=username)
-    confirmation_code = default_token_generator.make_token(user)
-    return send_mail(
-        'Код подтверждения',
-        f'Ваш код подтверждения: {confirmation_code}',
-        [settings.DEFAULT_FROM_EMAIL],
-        [email],
-        fail_silently=False,
+    user = get_object_or_404(User, email=request.data["email"])
+    confirmation_code = get_random_string()
+    user.confirmation_code = confirmation_code
+    user.save()
+    send_mail(
+        subject="Код для генерации токена аутентификации",
+        message=str(confirmation_code),
+        from_email=settings.LENG_EMAIL,
+        recipient_list=(request.data["email"],),
+    )
+    return response.Response(
+        data="Письмо с кодом для аутентификации",
+        status=status.HTTP_201_CREATED,
     )
 
 
