@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
@@ -14,8 +15,7 @@ from rest_framework.generics import get_object_or_404
 from .filters import FilterForTitle
 from .permissions import (IsAdmin, IsAuthorOrModeratorOrAdminOrReadOnly,
                           IsAdminOrReadOnly)
-from .serializers import (ConfirmationCodeSerializer,
-                          CategorySerializer, CommentSerializer,
+from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, GetTokenSerializer,
                           PersSerializer, ReviewCreateSerializer,
                           SingUpSerializer, TitleReadSerializer,
@@ -51,7 +51,10 @@ class SignUp(views.APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        user, _ = get_user_model().objects.get_or_create(
+            username=serializer.data.get('username'),
+            email=serializer.data.get('email'),
+        )
         sent_confirmation_code(request)
         return response.Response(request.data, status=status.HTTP_200_OK)
 
