@@ -44,13 +44,6 @@ class SingUpSerializer(serializers.ModelSerializer):
         return value
 
 
-class ConfirmationCodeSerializer(serializers.Serializer):
-    """Сериализатор для получения кода подтверждения"""
-
-    username = serializers.CharField(required=True)
-    email = serializers.EmailField(required=True)
-
-
 class GetTokenSerializer(serializers.Serializer):
     """Сериализатор для получения токена при регистрации."""
 
