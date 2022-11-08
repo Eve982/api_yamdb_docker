@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 
-from .validators import validate_year, validate_username
+from .validators import validate_year, UsernameRegexValidator, username_me
 
 
 class GenreAndCategoryModel(models.Model):
@@ -69,7 +69,7 @@ class User(AbstractUser):
 
     username = models.CharField(
         'Имя пользователя',
-        validators=(validate_username,),
+        validators=(UsernameRegexValidator(), username_me),
         max_length=settings.LENG_DATA_USER,
         unique=True,
         blank=False,
