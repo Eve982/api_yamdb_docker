@@ -1,11 +1,11 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from django.db.models import Avg, IntegerField
 from rest_framework import serializers
 
 from reviews.models import (Comment, Review,
                             Title, Category,
                             Genre, User)
-from reviews.validators import username_me
 
 
 class SingUpSerializer(serializers.ModelSerializer):
@@ -98,8 +98,8 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleReadSerializer(serializers.ModelSerializer):
     """Сериализатор для возврата списка произведений."""
 
-    rating = serializers.IntegerField(
-        source='reviews__score__avg', read_only=True
+    rating = serializers.SerializerMethodField(
+        read_only=True,
     )
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
@@ -114,6 +114,12 @@ class TitleReadSerializer(serializers.ModelSerializer):
             'id', 'name', 'year',
             'rating', 'description',
             'genre', 'category')
+
+    def get_rating(self, obj):
+        return obj.reviews.all().aggregate(Avg(
+            'score',
+            output_field=IntegerField())
+        )['score__avg']
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
