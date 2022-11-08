@@ -1,16 +1,19 @@
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from reviews.models import (Comment, Review,
                             Title, Category,
                             Genre, User)
+from reviews.validators import username_me
 
 
 class SingUpSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации."""
 
     email = serializers.EmailField(required=True)
-    username = serializers.CharField(required=True)
+    username = serializers.RegexField(max_length=settings.LENG_DATA_USER,
+                                      regex=r'^[\w.@+-]+\Z', required=True)
 
     class Meta:
         model = User
@@ -47,7 +50,8 @@ class SingUpSerializer(serializers.ModelSerializer):
 class GetTokenSerializer(serializers.Serializer):
     """Сериализатор для получения токена при регистрации."""
 
-    username = serializers.CharField(required=True)
+    username = serializers.RegexField(max_length=settings.LENG_DATA_USER,
+                                      regex=r'^[\w.@+-]+\Z', required=True)
     confirmation_code = serializers.CharField(required=True)
 
 

@@ -43,29 +43,6 @@ def sent_confirmation_code(request):
     )
 
 
-# @api_view(['POST'])
-# def signup(request):
-#     """View для авторизации пользователей.
-#     Ограничения по пермишенам (для всех доступно)"""
-#     serializer = SingUpSerializer(data=request.data)
-#     serializer.is_valid(raise_exception=True)
-#     try:
-#         user, _ = get_user_model().objects.get_or_create(
-#             username=serializer.data.get('username'),
-#             email=serializer.data.get('email'),
-#         )
-#     except IntegrityError:
-#         return response.Response('Это имя или email уже занято',
-#                                  status.HTTP_400_BAD_REQUEST)
-#     code = default_token_generator.make_token(user)
-#     send_mail(
-#         'Код токена',
-#         f'Код для получения токена {code}',
-#         settings.DEFAULT_FROM_EMAIL,
-#         [serializer.validated_data.get('email')]
-#     )
-#     return response.Response(serializer.data, status=status.HTTP_200_OK)
-
 class SignUp(views.APIView):
     """Функция регистрации новых пользователей."""
 
