@@ -2,6 +2,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg, IntegerField
 from rest_framework import serializers
+from datetime import datetime
 
 from reviews.models import (Comment, Review,
                             Title, Category,
@@ -135,12 +136,24 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(),
     )
     rating = serializers.IntegerField(required=False)
+    year = serializers.IntegerField(required=False)
 
     class Meta:
         model = Title
         fields = ('id', 'name', 'year',
                   'description', 'genre',
                   'rating', 'category')
+
+    def to_representation(self, instance):
+        serilizer = TitleReadSerializer(instance)
+        return serilizer.data
+
+    def validate_year(self, data):
+        if data >= datetime.now().year:
+            raise serializers.ValidationError(
+                f'Год {data} больше текущего!',
+            )
+        return data
 
 
 class ReviewCreateSerializer(serializers.ModelSerializer):

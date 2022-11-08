@@ -130,12 +130,13 @@ class TitleViewSet(viewsets.ModelViewSet):
     Для запросов на чтение используется TitleReadSerializer
     Для запросов на изменение используется TitleWriteSerializer
     """
-    queryset = Title.objects.order_by('name').all().annotate(
+    queryset = Title.objects.all().annotate(
         Avg('reviews__score')
     )
     permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, )
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter, )
     filterset_class = FilterForTitle
+    ordering = ('name',)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
