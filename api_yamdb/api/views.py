@@ -47,7 +47,6 @@ class SignUp(views.APIView):
     """Функция регистрации новых пользователей."""
 
     serializer_class = SingUpSerializer
-    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
