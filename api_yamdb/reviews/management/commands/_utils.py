@@ -7,12 +7,14 @@ from reviews.models import (
 from django.conf import settings
 
 
-FILE_DIR = os.path.join(settings.BASE_DIR, "static\data")
+FILE_DIR = os.path.join(settings.BASE_DIR, "static/data")
 
 
 try:
     def get_data():
-        with open(os.path.join(FILE_DIR, "category.csv"), encoding="utf-8") as csvfile:
+        with open(
+            os.path.join(FILE_DIR, "category.csv"), encoding="utf-8"
+        ) as csvfile:
             Category.objects.all().delete()
             reader = csv.DictReader(csvfile, delimiter=",")
             for row in reader:
@@ -23,7 +25,9 @@ try:
                 )
                 category.save()
 
-        with open(os.path.join(FILE_DIR, "genre.csv"), encoding="utf-8") as csvfile:
+        with open(
+            os.path.join(FILE_DIR, "genre.csv"), encoding="utf-8"
+        ) as csvfile:
             Genre.objects.all().delete()
             reader = csv.DictReader(csvfile, delimiter=",")
             for row in reader:
@@ -34,7 +38,9 @@ try:
                 )
                 genre.save()
 
-        with open(os.path.join(FILE_DIR, "users.csv"), encoding="utf-8") as csvfile:
+        with open(
+            os.path.join(FILE_DIR, "users.csv"), encoding="utf-8"
+        ) as csvfile:
             User.objects.all().delete()
             reader = csv.DictReader(csvfile, delimiter=",")
             for row in reader:
@@ -49,7 +55,9 @@ try:
                 )
                 user.save()
 
-        with open(os.path.join(FILE_DIR, "titles.csv"), encoding="utf-8") as csvfile:
+        with open(
+            os.path.join(FILE_DIR, "titles.csv"), encoding="utf-8"
+        ) as csvfile:
             Title.objects.all().delete()
             reader = csv.DictReader(csvfile, delimiter=",")
             for row in reader:
@@ -64,7 +72,9 @@ try:
                 )
                 title.save()
 
-        with open(os.path.join(FILE_DIR, "genre_title.csv"), encoding="utf-8") as csvfile:
+        with open(
+            os.path.join(FILE_DIR, "genre_title.csv"), encoding="utf-8"
+        ) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=",")
             for row in reader:
                 title, created = Title.objects.get_or_create(
@@ -76,7 +86,9 @@ try:
                 title.genre.add(genre)
                 title.save()
 
-        with open(os.path.join(FILE_DIR, "review.csv"), encoding="utf-8") as csvfile:
+        with open(
+            os.path.join(FILE_DIR, "review.csv"), encoding="utf-8"
+        ) as csvfile:
             Review.objects.all().delete()
             reader = csv.DictReader(csvfile, delimiter=",")
             for row in reader:
@@ -96,7 +108,9 @@ try:
                 )
                 review.save()
 
-        with open(os.path.join(FILE_DIR, "comments.csv"), encoding="utf-8") as csvfile:
+        with open(
+            os.path.join(FILE_DIR, "comments.csv"), encoding="utf-8"
+        ) as csvfile:
             Comment.objects.all().delete()
             reader = csv.DictReader(csvfile, delimiter=",")
             for row in reader:
