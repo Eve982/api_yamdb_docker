@@ -7,7 +7,7 @@ from reviews.models import (
 from django.conf import settings
 
 
-FILE_DIR = os.path.join(settings.BASE_DIR, "static/data")
+FILE_DIR = os.path.join(settings.BASE_DIR, r"static\data")
 
 
 try:
@@ -128,8 +128,7 @@ try:
                 )
                 p.save()
 except FileNotFoundError as e:
-    print(f"FileNotFoundError successfully handled\n"
-          f"{e}")
-except Exception as err:
-    print(f"Unexpected {err}, {type(err)}")
-    raise
+    raise f"FileNotFoundError successfully handled {e}"
+# except Exception as err:
+#     print(f"Unexpected {err}, {type(err)}")
+#     raise
