@@ -59,7 +59,6 @@ class SignUp(views.APIView):
 
 
 @api_view(['POST'])
-@permission_classes([permissions.AllowAny])
 def get_token(request):
     """Функция получения токена при регистрации."""
     serializer = GetTokenSerializer(data=request.data)
