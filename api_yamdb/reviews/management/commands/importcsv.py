@@ -1,11 +1,33 @@
-from django.core.management.base import BaseCommand
-from reviews.management.commands._utils import get_data
+import csv
+
+from django.conf import settings
+from django.core.management import BaseCommand
+
+from reviews.models import (Category, Genre, Title,
+                            Review, Comment, User)
 
 
 class Command(BaseCommand):
-    help = 'Import csv data from /static/data/ in database'
+    """Импортер данных из csv."""
 
-    def handle(self, *args, **options):
-        get_data()
+    DATA = {
+        User: 'users.csv',
+        Category: 'category.csv',
+        Genre: 'genre_titles.csv',
+        Title: 'titles.csv',
+        Review: 'review.csv',
+        Comment: 'comments.csv',
+    }
 
-    print('Выполнен импорт из файлов *.csv /static/data/')
+    def handle(self, *args, **kwargs):
+        for model, csv_f in self.DATA.items():
+            with open(
+                f'{settings.BASE_DIR}/static/data/{csv_f}',
+                'r',
+                encoding='utf-8'
+            ) as csv_file:
+                reader = csv.DictReader(csv_file)
+                model.objects.bulk_create(
+                    model(**data) for data in reader)
+        self.stdout.write(self.style.SUCCESS('Все данные загружены'))
+        raise NotImplementedError('Ошибка при выгрузке данных!')
