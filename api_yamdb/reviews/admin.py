@@ -58,6 +58,10 @@ class GenreAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
+class GenreTitleInline(admin.TabularInline):
+    model = Title.genre.through
+
+
 @admin.register(Title)
 class TitleAdmin(admin.ModelAdmin):
     list_display = (
@@ -65,6 +69,7 @@ class TitleAdmin(admin.ModelAdmin):
         'description', 'category',
     )
     search_fields = ('name',)
-    list_filter = ('name',)
+    list_filter = ('year', 'category', 'genre',)
     list_editable = ('category')
     empty_value_display = '-пусто-'
+    inlines = [GenreTitleInline]
