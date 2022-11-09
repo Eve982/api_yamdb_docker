@@ -1,5 +1,4 @@
 import csv
-import os
 
 from django.conf import settings
 from django.core.management import BaseCommand
@@ -20,8 +19,8 @@ DATA = {
 class Command(BaseCommand):
     """Импортер данных из csv."""
 
-    try:
-        def handle(self, *args, **kwargs):
+    def handle(self, *args, **kwargs):
+        try:
             for model, csv_f in DATA.items():
                 with open(
                     f'{settings.BASE_DIR}/static/data/{csv_f}',
@@ -32,5 +31,5 @@ class Command(BaseCommand):
                     model.objects.bulk_create(
                         model(**data) for data in reader)
             self.stdout.write(self.style.SUCCESS('Все данные загружены'))
-    except:
-        raise NotImplementedError('Ошибка при выгрузке данных!')
+        except:
+            raise NotImplementedError('Ошибка при выгрузке данных!')
