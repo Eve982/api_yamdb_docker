@@ -171,7 +171,7 @@ class Title(models.Model):
         max_length=settings.LENG_MAX,
         db_index=True,
     )
-    year = models.SmallIntegerField(
+    year = models.PositiveSmallIntegerField(
         'Год выпуска',
         db_index=True,
         validators=(validate_year,),
@@ -192,7 +192,7 @@ class Review(ReviewAndCommentModel):
         on_delete=models.CASCADE,
         verbose_name='Произведение'
     )
-    score = models.SmallIntegerField(
+    score = models.PositiveSmallIntegerField(
         'Оценка',
         db_index=True,
         validators=(
