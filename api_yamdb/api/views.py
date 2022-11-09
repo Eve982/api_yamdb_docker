@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework import (permissions, viewsets,
                             views, filters,
                             response, status)
-from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.decorators import action, api_view
 from rest_framework.generics import get_object_or_404
 
 from .filters import FilterForTitle
