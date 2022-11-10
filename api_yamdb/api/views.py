@@ -32,13 +32,13 @@ def sent_confirmation_code(request):
     user.confirmation_code = confirmation_code
     user.save()
     send_mail(
-        subject="Код для генерации токена аутентификации",
+        subject='Код для генерации токена аутентификации',
         message=str(confirmation_code),
         from_email=settings.LENG_EMAIL,
         recipient_list=(request.data["email"],),
     )
     return response.Response(
-        data="Письмо с кодом для аутентификации",
+        data='Письмо с кодом для аутентификации',
         status=status.HTTP_201_CREATED,
     )
 
@@ -145,8 +145,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter, )
     filterset_class = FilterForTitle
-    filterset_fields = ('name',)
-    ordering = ('id',)
+    ordering_fields = ('name',)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
