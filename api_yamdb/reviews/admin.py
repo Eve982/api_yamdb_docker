@@ -15,7 +15,7 @@ class UserAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
     )
-    list_editable = ('role')
+    list_editable = ('role',)
     list_filter = ('username', )
     search_fields = ('username', 'role',)
 
@@ -70,6 +70,6 @@ class TitleAdmin(admin.ModelAdmin):
     )
     search_fields = ('name',)
     list_filter = ('year', 'category', 'genre',)
-    list_editable = ('category')
+    list_editable = ('category',)
     empty_value_display = '-пусто-'
     inlines = [GenreTitleInline]
