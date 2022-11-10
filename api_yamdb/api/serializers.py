@@ -7,53 +7,30 @@ from datetime import datetime
 from reviews.models import (Comment, Review,
                             Title, Category,
                             Genre, User)
+from reviews.models import username_me
 
 
-class SingUpSerializer(serializers.ModelSerializer):
+class SingUpSerializer(serializers.Serializer):
     """Сериализатор для регистрации."""
 
     email = serializers.EmailField(required=True)
-    username = serializers.RegexField(max_length=settings.LENG_DATA_USER,
-                                      regex=r'^[\w.@+-]+\Z', required=True)
-
-    class Meta:
-        model = User
-        fields = ('username', 'email')
+    username = serializers.RegexField(
+        max_length=settings.LENG_DATA_USER,
+        regex=r'^[\w.@+-]+\Z', required=True
+    )
 
     def validate_username(self, value):
-        if value == 'me' or '':
-            raise serializers.ValidationError(
-                {
-                    'username':
-                    'Нельзя использовать имя me в качестве имени пользователя.'
-                },
-            )
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError(
-                {
-                    'username':
-                    'Пользователь с данным username уже зарегистрирован.'
-                },
-            )
-        return value
-
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError(
-                {
-                    'email':
-                    'Пользователь с данным email уже зарегистрирован.'
-                },
-            )
-        return value
-
+        return username_me(value)
 
 class GetTokenSerializer(serializers.Serializer):
     """Сериализатор для получения токена при регистрации."""
 
     username = serializers.RegexField(max_length=settings.LENG_DATA_USER,
-                                      regex=r'^[\w.@+-]+\Z', required=True)
+                                      regex=r'^[\w.@+-]+\Z', required=True,)
     confirmation_code = serializers.CharField(required=True)
+
+    def validate_username(self, value):
+        return username_me(value)
 
 
 class UsersSerializer(serializers.ModelSerializer):
