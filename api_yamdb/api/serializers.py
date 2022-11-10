@@ -90,9 +90,7 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleReadSerializer(serializers.ModelSerializer):
     """Сериализатор для возврата списка произведений."""
 
-    rating = serializers.SerializerMethodField(
-        read_only=True,
-    )
+    rating = serializers.IntegerField(read_only=True)
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
 
@@ -107,11 +105,11 @@ class TitleReadSerializer(serializers.ModelSerializer):
             'rating', 'description',
             'genre', 'category')
 
-    def get_rating(self, obj):
-        return obj.reviews.all().aggregate(Avg(
-            'score',
-            output_field=IntegerField())
-        )['score__avg']
+    # def get_rating(self, obj):
+    #     return obj.reviews.all().aggregate(Avg(
+    #         'score',
+    #         output_field=IntegerField())
+    #     )['score__avg']
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
@@ -182,4 +180,4 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'text', 'author', 'pub_date')
-        read_only = ('id',)
+        read_only = ('review',)

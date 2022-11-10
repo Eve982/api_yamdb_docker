@@ -139,8 +139,8 @@ class TitleViewSet(viewsets.ModelViewSet):
     Для запросов на чтение используется TitleReadSerializer
     Для запросов на изменение используется TitleWriteSerializer
     """
-    queryset = Title.objects.all().annotate(
-        Avg('reviews__score')
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')
     )
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter, )
