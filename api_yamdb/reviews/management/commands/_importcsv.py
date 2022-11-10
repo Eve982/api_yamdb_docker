@@ -7,7 +7,10 @@ from reviews.models import (Category, Genre, Title,
                             Review, Comment, User)
 
 
-FILE_DIR = os.path.join(settings.BASE_DIR, "static\data")
+FILE_DIR = os.path.join(
+    settings.BASE_DIR,
+    'static\\data'
+)
 
 
 def import_csv():

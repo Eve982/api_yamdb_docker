@@ -1,5 +1,4 @@
 from django.core.mail import send_mail
-from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
@@ -14,8 +13,9 @@ from rest_framework.decorators import action, api_view
 from rest_framework.generics import get_object_or_404
 
 from .filters import FilterForTitle
-from .permissions import (IsAdmin, IsAuthorOrModeratorOrAdminOrReadOnly,
-                          IsAdminOrReadOnly)
+from .permissions import (IsAdmin,
+                          IsAdminOrReadOnly,
+                          IsAuthorOrModeratorOrAdminOrReadOnly,)
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, GetTokenSerializer,
                           PersSerializer, ReviewCreateSerializer,
@@ -25,12 +25,9 @@ from .mixins import CreateListDestroyViewSet
 from reviews.models import Category, Genre, Review, Title, User
 
 
-def sent_confirmation_code(request):
+def sent_confirmation_code(request=User):
     """Функция отправки кода подтверждения при регистрации."""
-    user = get_object_or_404(User, email=request.data["email"])
-    confirmation_code = get_random_string()
-    user.confirmation_code = confirmation_code
-    user.save()
+    confirmation_code = default_token_generator.make_token
     send_mail(
         subject='Код для генерации токена аутентификации',
         message=str(confirmation_code),
@@ -57,8 +54,10 @@ class SignUp(views.APIView):
                 email=serializer.validated_data.get('email')
             )
         except IntegrityError:
-            return response.Response('Это имя или email уже занято',
-                            status.HTTP_400_BAD_REQUEST)
+            return response.Response(
+                'Это имя или email уже занято',
+                status.HTTP_400_BAD_REQUEST
+            )
         code = default_token_generator.make_token(user)
         send_mail(
             'Код токена',
@@ -66,7 +65,9 @@ class SignUp(views.APIView):
             settings.DEFAULT_FROM_EMAIL,
             [serializer.validated_data.get('email')]
         )
-        return response.Response(serializer.data, status=status.HTTP_200_OK)
+        return response.Response(
+            serializer.data, status=status.HTTP_200_OK
+        )
 
 
 @api_view(['POST'])
@@ -76,7 +77,9 @@ def get_token(request):
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data.get('username')
     user = get_object_or_404(User, username=username)
-    confirmation_code = serializer.validated_data.get('confirmation_code')
+    confirmation_code = serializer.validated_data.get(
+        'confirmation_code'
+    )
     if default_token_generator.check_token(user, confirmation_code):
         token = AccessToken.for_user(user)
         return response.Response(
