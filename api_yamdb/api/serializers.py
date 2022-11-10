@@ -117,8 +117,7 @@ class TitleWriteSerializer(serializers.ModelSerializer):
                   'rating', 'category')
 
     def to_representation(self, instance):
-        serilizer = TitleReadSerializer(instance)
-        return serilizer.data
+        return TitleReadSerializer(instance).data
 
     def validate_year(self, data):
         if data >= datetime.now().year:
