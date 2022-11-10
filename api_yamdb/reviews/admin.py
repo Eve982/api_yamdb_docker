@@ -15,8 +15,8 @@ class UserAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
     )
-    list_editable = ('role')
-    list_filter = ('username', )
+    list_editable = ('role',)
+    list_filter = ('username', 'role',)
     search_fields = ('username', 'role',)
 
 
@@ -26,7 +26,7 @@ class ReviewAdmin(admin.ModelAdmin):
         'pk', 'title', 'text',
         'author', 'score', 'pub_date',
     )
-    search_fields = ('title', 'author', 'pub_date')
+    search_fields = ('title', 'author', 'pub_date',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
 
@@ -37,14 +37,14 @@ class CommentAdmin(admin.ModelAdmin):
         'pk', 'review', 'text',
         'author', 'pub_date',
     )
-    search_fields = ('review', 'author', 'pub_date')
+    search_fields = ('review', 'author', 'pub_date',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'slug')
+    list_display = ('pk', 'name', 'slug',)
     search_fields = ('name',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
@@ -52,7 +52,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'slug')
+    list_display = ('pk', 'name', 'slug',)
     search_fields = ('name',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
@@ -66,10 +66,10 @@ class GenreTitleInline(admin.TabularInline):
 class TitleAdmin(admin.ModelAdmin):
     list_display = (
         'pk', 'name', 'year',
-        'description', 'category',
+        'description', 'category', GenreTitleInline
     )
     search_fields = ('name',)
     list_filter = ('year', 'category', 'genre',)
-    list_editable = ('category')
+    list_editable = ('category', )
     empty_value_display = '-пусто-'
     inlines = [GenreTitleInline]
