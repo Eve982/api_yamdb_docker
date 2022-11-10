@@ -5,6 +5,7 @@ from reviews.models import User
 
 class IsAdmin(permissions.IsAdminUser):
     """Права для работы с пользователями."""
+
     def has_permission(self, request, view):
         return (
             request.user.is_authenticated
