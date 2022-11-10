@@ -16,7 +16,7 @@ class UserAdmin(admin.ModelAdmin):
         'last_name',
     )
     list_editable = ('role',)
-    list_filter = ('username',)
+    list_filter = ('username', 'role',)
     search_fields = ('username', 'role',)
 
 
@@ -66,10 +66,10 @@ class GenreTitleInline(admin.TabularInline):
 class TitleAdmin(admin.ModelAdmin):
     list_display = (
         'pk', 'name', 'year',
-        'description', 'category',
+        'description', 'category', GenreTitleInline
     )
     search_fields = ('name',)
     list_filter = ('year', 'category', 'genre',)
-    list_editable = ('category',)
+    list_editable = ('category', )
     empty_value_display = '-пусто-'
     inlines = [GenreTitleInline]
