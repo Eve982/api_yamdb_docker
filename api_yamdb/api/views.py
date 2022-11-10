@@ -4,7 +4,6 @@ from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db import IntegrityError
 from django.db.models import Avg
-from django.utils.crypto import get_random_string
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework import (permissions, viewsets,
                             views, filters,

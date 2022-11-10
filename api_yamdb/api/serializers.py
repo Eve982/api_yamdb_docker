@@ -22,6 +22,7 @@ class SingUpSerializer(serializers.Serializer):
     def validate_username(self, value):
         return username_me(value)
 
+
 class GetTokenSerializer(serializers.Serializer):
     """Сериализатор для получения токена при регистрации."""
 

@@ -1,7 +1,5 @@
 from rest_framework import permissions
 
-from reviews.models import User
-
 
 class IsAdmin(permissions.IsAdminUser):
     """Права для работы с пользователями."""
