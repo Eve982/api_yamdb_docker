@@ -105,12 +105,6 @@ class TitleReadSerializer(serializers.ModelSerializer):
             'rating', 'description',
             'genre', 'category')
 
-    # def get_rating(self, obj):
-    #     return obj.reviews.all().aggregate(Avg(
-    #         'score',
-    #         output_field=IntegerField())
-    #     )['score__avg']
-
 
 class TitleWriteSerializer(serializers.ModelSerializer):
     """Сериализатор для добавления произведений."""
