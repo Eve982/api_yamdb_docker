@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg, IntegerField
 from rest_framework import serializers
@@ -25,8 +26,10 @@ class SingUpSerializer(serializers.Serializer):
 class GetTokenSerializer(serializers.Serializer):
     """Сериализатор для получения токена при регистрации."""
 
-    username = serializers.RegexField(max_length=settings.LENG_DATA_USER,
-                                      regex=r'^[\w.@+-]+\Z', required=True,)
+    username = serializers.RegexField(
+        max_length=settings.LENG_DATA_USER,
+        regex=r'^[\w.@+-]+\Z', required=True,
+    )
     confirmation_code = serializers.CharField(required=True)
 
     def validate_username(self, value):
@@ -34,6 +37,12 @@ class GetTokenSerializer(serializers.Serializer):
 
 
 class UsersSerializer(serializers.ModelSerializer):
+    """Сериализатор для новых юзеров."""
+
+    username = serializers.RegexField(
+        max_length=settings.LENG_DATA_USER,
+        regex=r'^[\w.@+-]+\Z'
+    )
 
     class Meta:
         abstract = True
@@ -42,9 +51,19 @@ class UsersSerializer(serializers.ModelSerializer):
             'username', 'email', 'first_name',
             'last_name', 'bio', 'role')
 
+    def validate_username(self, value):
+        if (
+            self.context.get('request').method == 'POST'
+            and User.objects.filter(username=value).exists()
+        ):
+            raise ValidationError(
+                'Пользователь с таким именем уже существует.'
+            )
+        return username_me(value)
+
 
 class PersSerializer(UsersSerializer):
-    """Сериализатор для пользователей."""
+    """Сериализатор для пользователя."""
 
     class Meta(UsersSerializer.Meta):
         read_only_fields = ('role', )

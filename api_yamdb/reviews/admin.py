@@ -15,9 +15,9 @@ class UserAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
     )
-    list_editable = ('role', )
-    list_filter = ('username', )
-    search_fields = ('username', 'role', )
+    list_editable = ('role',)
+    list_filter = ('username',)
+    search_fields = ('username', 'role',)
 
 
 @admin.register(Review)
@@ -26,7 +26,7 @@ class ReviewAdmin(admin.ModelAdmin):
         'pk', 'title', 'text',
         'author', 'score', 'pub_date',
     )
-    search_fields = ('title', 'author', 'pub_date', )
+    search_fields = ('title', 'author', 'pub_date',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
 
@@ -37,14 +37,14 @@ class CommentAdmin(admin.ModelAdmin):
         'pk', 'review', 'text',
         'author', 'pub_date',
     )
-    search_fields = ('review', 'author', 'pub_date', )
-    list_filter = ('pub_date', )
+    search_fields = ('review', 'author', 'pub_date',)
+    list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'slug', )
+    list_display = ('pk', 'name', 'slug',)
     search_fields = ('name',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
@@ -52,9 +52,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'slug', )
-    search_fields = ('name', )
-    list_filter = ('name', )
+    list_display = ('pk', 'name', 'slug',)
+    search_fields = ('name',)
+    list_filter = ('name',)
     empty_value_display = '-пусто-'
 
 
@@ -68,8 +68,8 @@ class TitleAdmin(admin.ModelAdmin):
         'pk', 'name', 'year',
         'description', 'category',
     )
-    search_fields = ('name', )
-    list_filter = ('year', 'category', 'genre', )
-    list_editable = ('category', )
+    search_fields = ('name',)
+    list_filter = ('year', 'category', 'genre',)
+    list_editable = ('category',)
     empty_value_display = '-пусто-'
     inlines = [GenreTitleInline]
