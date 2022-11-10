@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.db.models import Avg, IntegerField
 from rest_framework import serializers
 from datetime import datetime
 
@@ -99,7 +98,7 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleReadSerializer(serializers.ModelSerializer):
     """Сериализатор для возврата списка произведений."""
 
-    rating = serializers.SerializerMethodField(
+    rating = serializers.IntegerField(
         read_only=True,
     )
     category = CategorySerializer(read_only=True)
@@ -115,12 +114,6 @@ class TitleReadSerializer(serializers.ModelSerializer):
             'id', 'name', 'year',
             'rating', 'description',
             'genre', 'category')
-
-    def get_rating(self, obj):
-        return obj.reviews.all().aggregate(Avg(
-            'score',
-            output_field=IntegerField())
-        )['score__avg']
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
