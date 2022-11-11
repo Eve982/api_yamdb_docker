@@ -1,16 +1,22 @@
 import csv
 import os
+
 from django.conf import settings
 
 from reviews.models import (Category, Genre, Title,
                             Review, Comment, User)
 
-FILE_DIR = os.path.join(settings.BASE_DIR, "static\data")
+
+FILE_DIR = os.path.join(
+    settings.BASE_DIR,
+    'static\\data'
+)
 
 
 def import_csv():
-
-    with open(os.path.join(FILE_DIR, "category.csv"), encoding="utf-8") as csvfile:
+    with open(
+        os.path.join(FILE_DIR, "category.csv"), encoding="utf-8"
+    ) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         Category.objects.bulk_create(objs=[
             Category(
@@ -21,7 +27,9 @@ def import_csv():
             for row in reader
         ])
 
-    with open(os.path.join(FILE_DIR, "genre.csv"), encoding="utf-8") as csvfile:
+    with open(
+        os.path.join(FILE_DIR, "genre.csv"), encoding="utf-8"
+    ) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         Genre.objects.bulk_create(objs=[
             Genre(
@@ -32,7 +40,9 @@ def import_csv():
             for row in reader
         ])
 
-    with open(os.path.join(FILE_DIR, "users.csv"), encoding="utf-8") as csvfile:
+    with open(
+        os.path.join(FILE_DIR, "users.csv"), encoding="utf-8"
+    ) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         User.objects.bulk_create(objs=[
             User(
@@ -47,7 +57,9 @@ def import_csv():
             for row in reader
         ])
 
-    with open(os.path.join(FILE_DIR, "titles.csv"), encoding="utf-8") as csvfile:
+    with open(
+        os.path.join(FILE_DIR, "titles.csv"), encoding="utf-8"
+    ) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         Title.objects.bulk_create(objs=[
             Title(
@@ -61,7 +73,9 @@ def import_csv():
             for row in reader
         ])
 
-    with open(os.path.join(FILE_DIR, "genre_title.csv"), encoding="utf-8") as csvfile:
+    with open(
+        os.path.join(FILE_DIR, "genre_title.csv"), encoding="utf-8"
+    ) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
             title, created = Title.objects.get_or_create(
@@ -73,7 +87,9 @@ def import_csv():
             title.genre.add(genre)
             title.save()
 
-    with open(os.path.join(FILE_DIR, "review.csv"), encoding="utf-8") as csvfile:
+    with open(
+        os.path.join(FILE_DIR, "review.csv"), encoding="utf-8"
+    ) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         Review.objects.bulk_create(objs=[
             Review(
@@ -89,7 +105,9 @@ def import_csv():
             for row in reader
         ])
 
-    with open(os.path.join(FILE_DIR, "comments.csv"), encoding="utf-8") as csvfile:
+    with open(
+        os.path.join(FILE_DIR, "comments.csv"), encoding="utf-8"
+    ) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         Comment.objects.bulk_create(objs=[
             Comment(

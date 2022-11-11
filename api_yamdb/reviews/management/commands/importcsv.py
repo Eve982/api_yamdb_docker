@@ -1,12 +1,13 @@
-from django.core.management import BaseCommand, CommandError
-from ._importcsv import import_csv
 from django.db.utils import IntegrityError
+from django.core.management import BaseCommand, CommandError
+
+from ._importcsv import import_csv
 
 
 class Command(BaseCommand):
     """Импортер данных из csv."""
 
-    help = 'Импорт данных csv из /static/data/ в базу данных'
+    help = 'Импорт данных csv из /static/data/ в базу данных.'
 
     def handle(self, *args, **kwargs):
         try:

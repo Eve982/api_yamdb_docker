@@ -1,10 +1,9 @@
 from django.core.mail import send_mail
-from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db import IntegrityError
 from django.db.models import Avg
-from django.utils.crypto import get_random_string
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework import (permissions, viewsets,
                             views, filters,
@@ -13,8 +12,9 @@ from rest_framework.decorators import action, api_view
 from rest_framework.generics import get_object_or_404
 
 from .filters import FilterForTitle
-from .permissions import (IsAdmin, IsAuthorOrModeratorOrAdminOrReadOnly,
-                          IsAdminOrReadOnly)
+from .permissions import (IsAdmin,
+                          IsAdminOrReadOnly,
+                          IsAuthorOrModeratorOrAdminOrReadOnly,)
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, GetTokenSerializer,
                           PersSerializer, ReviewCreateSerializer,
@@ -24,20 +24,17 @@ from .mixins import CreateListDestroyViewSet
 from reviews.models import Category, Genre, Review, Title, User
 
 
-def sent_confirmation_code(request):
+def sent_confirmation_code(request=User):
     """Функция отправки кода подтверждения при регистрации."""
-    user = get_object_or_404(User, email=request.data["email"])
-    confirmation_code = get_random_string()
-    user.confirmation_code = confirmation_code
-    user.save()
+    confirmation_code = default_token_generator.make_token
     send_mail(
-        subject="Код для генерации токена аутентификации",
+        subject='Код для генерации токена аутентификации',
         message=str(confirmation_code),
         from_email=settings.LENG_EMAIL,
         recipient_list=(request.data["email"],),
     )
     return response.Response(
-        data="Письмо с кодом для аутентификации",
+        data='Письмо с кодом для аутентификации',
         status=status.HTTP_201_CREATED,
     )
 
@@ -50,12 +47,26 @@ class SignUp(views.APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user, _ = get_user_model().objects.get_or_create(
-            username=serializer.data.get('username'),
-            email=serializer.data.get('email'),
+        try:
+            user, _ = User.objects.get_or_create(
+                username=serializer.validated_data.get('username'),
+                email=serializer.validated_data.get('email')
+            )
+        except IntegrityError:
+            return response.Response(
+                'Это имя или email уже занято',
+                status.HTTP_400_BAD_REQUEST
+            )
+        code = default_token_generator.make_token(user)
+        send_mail(
+            'Код токена',
+            f'Код для получения токена {code}',
+            settings.DEFAULT_FROM_EMAIL,
+            [serializer.validated_data.get('email')]
         )
-        sent_confirmation_code(request)
-        return response.Response(request.data, status=status.HTTP_200_OK)
+        return response.Response(
+            serializer.data, status=status.HTTP_200_OK
+        )
 
 
 @api_view(['POST'])
@@ -65,7 +76,9 @@ def get_token(request):
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data.get('username')
     user = get_object_or_404(User, username=username)
-    confirmation_code = serializer.validated_data.get('confirmation_code')
+    confirmation_code = serializer.validated_data.get(
+        'confirmation_code'
+    )
     if default_token_generator.check_token(user, confirmation_code):
         token = AccessToken.for_user(user)
         return response.Response(
@@ -128,7 +141,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     Для запросов на чтение используется TitleReadSerializer
     Для запросов на изменение используется TitleWriteSerializer
     """
-    queryset = Title.objects.all().annotate(
+    queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
     )
     permission_classes = (IsAdminOrReadOnly,)
