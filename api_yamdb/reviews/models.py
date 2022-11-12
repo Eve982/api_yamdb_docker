@@ -1,11 +1,10 @@
-from django.core.validators import (MaxValueValidator,
-                                    MinValueValidator,
-                                    validate_slug)
-from django.contrib.auth.models import AbstractUser
-from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    validate_slug)
+from django.db import models
 
-from .validators import validate_year, UsernameRegexValidator, username_me
+from .validators import UsernameRegexValidator, username_me, validate_year
 
 
 class GenreAndCategoryModel(models.Model):
@@ -74,7 +73,7 @@ class User(AbstractUser):
         unique=True,
         blank=False,
         null=False,
-        help_text='Набор символов не более 150.'
+        help_text=f'Набор символов не более {settings.LENG_DATA_USER}.'
                   'Только буквы, цифры и @/./+/-/_',
         error_messages={
             'unique': "Пользователь с таким именем уже существует!",
@@ -111,10 +110,6 @@ class User(AbstractUser):
                 name='unique_username_email',
             )
         ]
-
-    @property
-    def is_user(self):
-        return self.role == self.USER
 
     @property
     def is_moderator(self):

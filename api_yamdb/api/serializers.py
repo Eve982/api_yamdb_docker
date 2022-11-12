@@ -1,22 +1,23 @@
-from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
-from rest_framework import serializers
 from datetime import datetime
 
-from reviews.models import (Comment, Review,
-                            Title, Category,
-                            Genre, User)
-from reviews.models import username_me
+from django.shortcuts import get_object_or_404
+from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from reviews.models import (Category, Comment, Genre, Review, Title, User,
+                            username_me)
+from reviews.validators import UsernameRegexValidator
 
 
 class SingUpSerializer(serializers.Serializer):
     """Сериализатор для регистрации."""
 
-    email = serializers.EmailField(required=True)
-    username = serializers.RegexField(
-        max_length=settings.LENG_DATA_USER,
-        regex=r'^[\w.@+-]+\Z', required=True
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    username = serializers.CharField(
+        required=True,
+        validators=[UsernameRegexValidator(), ]
     )
 
     def validate_username(self, value):
@@ -26,9 +27,9 @@ class SingUpSerializer(serializers.Serializer):
 class GetTokenSerializer(serializers.Serializer):
     """Сериализатор для получения токена при регистрации."""
 
-    username = serializers.RegexField(
-        max_length=settings.LENG_DATA_USER,
-        regex=r'^[\w.@+-]+\Z', required=True,
+    username = serializers.CharField(
+        required=True,
+        validators=(UsernameRegexValidator(), )
     )
     confirmation_code = serializers.CharField(required=True)
 
@@ -39,9 +40,9 @@ class GetTokenSerializer(serializers.Serializer):
 class UsersSerializer(serializers.ModelSerializer):
     """Сериализатор для новых юзеров."""
 
-    username = serializers.RegexField(
-        max_length=settings.LENG_DATA_USER,
-        regex=r'^[\w.@+-]+\Z'
+    username = serializers.CharField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all()), UsernameRegexValidator()]
     )
 
     class Meta:
@@ -51,22 +52,12 @@ class UsersSerializer(serializers.ModelSerializer):
             'username', 'email', 'first_name',
             'last_name', 'bio', 'role')
 
-    def validate_username(self, value):
-        if (
-            self.context.get('request').method == 'POST'
-            and User.objects.filter(username=value).exists()
-        ):
-            raise ValidationError(
-                'Пользователь с таким именем уже существует.'
-            )
-        return username_me(value)
-
 
 class PersSerializer(UsersSerializer):
     """Сериализатор для пользователя."""
 
     class Meta(UsersSerializer.Meta):
-        read_only_fields = ('role', )
+        read_only_fields = ('role',)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -142,7 +133,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания отзывов."""
 
     author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True, many=False,)
+        slug_field='username', read_only=True, many=False, )
     score = serializers.IntegerField(max_value=10, min_value=1)
 
     class Meta:
@@ -157,7 +148,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
             title_id = self.context['view'].kwargs.get('title_id')
             title = get_object_or_404(Title, pk=title_id)
             if Review.objects.filter(
-                author=request.user, title=title
+                    author=request.user, title=title
             ).exists():
                 raise serializers.ValidationError(
                     'Вы уже оставили отзыв!')

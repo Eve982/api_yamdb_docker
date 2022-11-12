@@ -1,5 +1,5 @@
-from datetime import timedelta
 import os
+from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -120,3 +120,6 @@ LENG_MAX = 256
 LENG_DATA_USER = 150
 LENG_EMAIL = 254
 LENG_CUT = 30
+
+MESSAGE_EMAIL_EXISTS = 'Этот email уже занят'
+MESSAGE_USERNAME_EXISTS = 'Это имя уже занят'
