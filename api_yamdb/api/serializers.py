@@ -3,7 +3,9 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from reviews.models import (Category, Comment, Genre, Review, Title, User,
+
+from reviews.models import (Category, Comment, Genre,
+                            Review, Title, User,
                             username_me)
 from reviews.validators import UsernameRegexValidator
 
@@ -42,7 +44,10 @@ class UsersSerializer(serializers.ModelSerializer):
 
     username = serializers.CharField(
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all()), UsernameRegexValidator()]
+        validators=[
+            UniqueValidator(queryset=User.objects.all()),
+            UsernameRegexValidator()
+        ]
     )
 
     class Meta:
