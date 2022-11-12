@@ -1,6 +1,8 @@
-from django.core.exceptions import ValidationError
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from datetime import datetime
+
+from django.conf import settings
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.exceptions import ValidationError
 
 
 class UsernameRegexValidator(UnicodeUsernameValidator):
@@ -8,9 +10,15 @@ class UsernameRegexValidator(UnicodeUsernameValidator):
 
     regex = r'^[\w.@+-]+\Z'
     flags = 0
-    message = ('Не допустимые символы <{value}> в нике',
-               'Набор символов не более 150'
-               'Только буквы, цифры и @/./+/-/_')
+    max_length = settings.LENG_DATA_USER
+    message = (f'Введите правильное имя пользователя. Оно может содержать'
+               f' только буквы, цифры и знаки @/./+/-/_.'
+               f' Длина не более {settings.LENG_DATA_USER} символов')
+    error_messages = {
+        'invalid': f'Набор символов не более {settings.LENG_DATA_USER}. '
+                   'Только буквы, цифры и @/./+/-/_',
+        'required': 'Поле не может быть пустым',
+    }
 
 
 def username_me(value):

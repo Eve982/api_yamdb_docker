@@ -2,10 +2,7 @@ import csv
 import os
 
 from django.conf import settings
-
-from reviews.models import (Category, Genre, Title,
-                            Review, Comment, User)
-
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 FILE_DIR = os.path.join(
     settings.BASE_DIR,

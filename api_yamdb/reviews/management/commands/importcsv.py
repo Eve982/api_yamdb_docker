@@ -1,5 +1,5 @@
-from django.db.utils import IntegrityError
 from django.core.management import BaseCommand, CommandError
+from django.db.utils import IntegrityError
 
 from ._importcsv import import_csv
 
