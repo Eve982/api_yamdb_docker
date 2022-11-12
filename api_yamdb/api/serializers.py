@@ -4,6 +4,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from datetime import datetime
 
+from rest_framework.validators import UniqueValidator
+
 from reviews.models import (Comment, Review,
                             Title, Category,
                             Genre, User)
@@ -16,7 +18,12 @@ class SingUpSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     username = serializers.RegexField(
         max_length=settings.LENG_DATA_USER,
-        regex=r'^[\w.@+-]+\Z', required=True
+        regex=r'^[\w.@+-]+\Z', required=True,
+        error_messages={
+            'invalid': 'Набор символов не более 150'
+                       'Только буквы, цифры и @/./+/-/_',
+            'required': 'поле не может быть пустым',
+        }
     )
 
     def validate_username(self, value):
@@ -29,6 +36,11 @@ class GetTokenSerializer(serializers.Serializer):
     username = serializers.RegexField(
         max_length=settings.LENG_DATA_USER,
         regex=r'^[\w.@+-]+\Z', required=True,
+        error_messages={
+            'invalid': f'Набор символов не более {settings.LENG_DATA_USER}'
+                       'Только буквы, цифры и @/./+/-/_',
+            'required': 'поле не может быть пустым',
+        }
     )
     confirmation_code = serializers.CharField(required=True)
 
@@ -41,7 +53,13 @@ class UsersSerializer(serializers.ModelSerializer):
 
     username = serializers.RegexField(
         max_length=settings.LENG_DATA_USER,
-        regex=r'^[\w.@+-]+\Z'
+        regex=r'^[\w.@+-]+\Z',
+        error_messages={
+            'invalid': 'Набор символов не более 150'
+                       'Только буквы, цифры и @/./+/-/_',
+            'required': 'поле не может быть пустым',
+        },
+        validators=[UniqueValidator(queryset=User.objects.all())]
     )
 
     class Meta:
@@ -51,22 +69,12 @@ class UsersSerializer(serializers.ModelSerializer):
             'username', 'email', 'first_name',
             'last_name', 'bio', 'role')
 
-    def validate_username(self, value):
-        if (
-            self.context.get('request').method == 'POST'
-            and User.objects.filter(username=value).exists()
-        ):
-            raise ValidationError(
-                'Пользователь с таким именем уже существует.'
-            )
-        return username_me(value)
-
 
 class PersSerializer(UsersSerializer):
     """Сериализатор для пользователя."""
 
     class Meta(UsersSerializer.Meta):
-        read_only_fields = ('role', )
+        read_only_fields = ('role',)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -142,7 +150,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания отзывов."""
 
     author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True, many=False,)
+        slug_field='username', read_only=True, many=False, )
     score = serializers.IntegerField(max_value=10, min_value=1)
 
     class Meta:
@@ -157,7 +165,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
             title_id = self.context['view'].kwargs.get('title_id')
             title = get_object_or_404(Title, pk=title_id)
             if Review.objects.filter(
-                author=request.user, title=title
+                    author=request.user, title=title
             ).exists():
                 raise serializers.ValidationError(
                     'Вы уже оставили отзыв!')
