@@ -1,3 +1,4 @@
+import re
 from django.core.exceptions import ValidationError
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from datetime import datetime
@@ -20,7 +21,7 @@ def username_me(value):
             'Имя пользователя "me" не разрешено.'
         )
     return value
-
+        
 
 def validate_year(value):
     if value >= datetime.now().year:
