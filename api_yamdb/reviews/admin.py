@@ -66,10 +66,11 @@ class GenreTitleInline(admin.TabularInline):
 class TitleAdmin(admin.ModelAdmin):
     list_display = (
         'pk', 'name', 'year',
-        'description', 'category', GenreTitleInline
+        'description', 'category',
     )
     search_fields = ('name',)
     list_filter = ('year', 'category', 'genre',)
     list_editable = ('category', )
     empty_value_display = '-пусто-'
     inlines = [GenreTitleInline]
+    exclude = ('genre',)

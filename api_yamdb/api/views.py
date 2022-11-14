@@ -1,42 +1,25 @@
-from django.core.mail import send_mail
-from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
-from django_filters.rest_framework import DjangoFilterBackend
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Avg
-from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework import (permissions, viewsets,
-                            views, filters,
-                            response, status)
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import (filters, permissions, response, status, views,
+                            viewsets)
 from rest_framework.decorators import action, api_view
 from rest_framework.generics import get_object_or_404
-
-from .filters import FilterForTitle
-from .permissions import (IsAdmin,
-                          IsAdminOrReadOnly,
-                          IsAuthorOrModeratorOrAdminOrReadOnly,)
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, GetTokenSerializer,
-                          PersSerializer, ReviewCreateSerializer,
-                          SingUpSerializer, TitleReadSerializer,
-                          TitleWriteSerializer, UsersSerializer)
-from .mixins import CreateListDestroyViewSet
+from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title, User
 
-
-def sent_confirmation_code(request=User):
-    """Функция отправки кода подтверждения при регистрации."""
-    confirmation_code = default_token_generator.make_token
-    send_mail(
-        subject='Код для генерации токена аутентификации',
-        message=str(confirmation_code),
-        from_email=settings.LENG_EMAIL,
-        recipient_list=(request.data["email"],),
-    )
-    return response.Response(
-        data='Письмо с кодом для аутентификации',
-        status=status.HTTP_201_CREATED,
-    )
+from .filters import FilterForTitle
+from .mixins import CreateListDestroyViewSet
+from .permissions import (IsAdmin, IsAdminOrReadOnly,
+                          IsAuthorOrModeratorOrAdminOrReadOnly)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, GetTokenSerializer, PersSerializer,
+                          ReviewCreateSerializer, SingUpSerializer,
+                          TitleReadSerializer, TitleWriteSerializer,
+                          UsersSerializer)
 
 
 class SignUp(views.APIView):
@@ -54,7 +37,9 @@ class SignUp(views.APIView):
             )
         except IntegrityError:
             return response.Response(
-                'Это имя или email уже занято',
+                settings.MESSAGE_EMAIL_EXISTS if
+                User.objects.filter(username='username').exists()
+                else settings.MESSAGE_USERNAME_EXISTS,
                 status.HTTP_400_BAD_REQUEST
             )
         code = default_token_generator.make_token(user)
